@@ -27,5 +27,5 @@ class UltrasonicSensor(InputComponent):
         else:
             raise Exception("The subtopics and subtopics_data must have same length!")
         
-        print(datas)                
+        #print(datas)                
         db.child(topic).update(datas)
