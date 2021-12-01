@@ -1,7 +1,7 @@
 from datetime import datetime
 from time import *
 from ComponentModule.InputComponentPackage.InputComponent import InputComponent
-from FakeDevices import *
+from grovepi import *
 
 
 class UltrasonicSensor(InputComponent):

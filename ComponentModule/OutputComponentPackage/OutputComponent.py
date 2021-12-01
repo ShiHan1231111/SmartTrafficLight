@@ -1,5 +1,5 @@
 from ComponentModule.Component import Component
-from FakeDevices import *
+from grovepi import *
 
 
 class OutputComponent(Component):
