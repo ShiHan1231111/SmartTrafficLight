@@ -1,6 +1,6 @@
 from pyrebase import pyrebase
 
-class Firebase():    
+class Firebase():
     def __init__(self):
         config = {
             "apiKey":"AIzaSyDGGWQfuvSiiCPpL2MUIJi1HO_TdmscVlY",
@@ -40,13 +40,13 @@ class Firebase():
     def read_live(self,topic,stream_handler = None):
         if stream_handler is None:
             stream_handler = self._stream_handler
-        return self.db.child(topic).stream(stream_handler)                
-        
-    def _stream_handler(self,message):        
+        return self.db.child(topic).stream(stream_handler)
+
+    def _stream_handler(self,message):
         print(message["event"])
         print(message["path"])
         print(message["data"])
-        
+
     def refresh_data(self):
         init_datas = {
             "roads":{
@@ -137,6 +137,8 @@ class Firebase():
                 }
         }    
         self.db.update("",init_datas)
-        
-    
+
+
+    def remove_data(self,topic,key):
+        return self.db.child(f"{topic}/{key}").remove()
         
