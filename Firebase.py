@@ -22,8 +22,8 @@ class Firebase():
     def replace(self,topic,datas):        
         return self.db.child(topic).set(datas)
     
-    # atas will be inserted under/inside a random generated key by firebase
-    def add_under_random_key(self,topic,datas):        
+    # datas will be inserted under/inside a random generated key by firebase
+    def append(self,topic,datas):        
         return self.db.child(topic).push(datas)
         
     # datas must be 'dict' data type, insert to new under the topic and replace it if the key is existed
@@ -136,7 +136,7 @@ class Firebase():
                         },                                                    
                 }
         }    
-        self.db.update("",init_datas)
+        self.update("",init_datas)
         
     
         
