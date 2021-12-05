@@ -11,3 +11,10 @@ class ServerIO(object):
     @staticmethod
     def update_tflight_order(new_order):
         fb.update("Server/Order", new_order)
+
+    @staticmethod
+    def update_all_to_switch():
+        data = {"TL001": "SWITCH",
+                "TL002": "SWITCH",
+                "TL003": "SWITCH"}
+        fb.update("Server/Event/Switch",data)
