@@ -22,8 +22,8 @@ class Firebase():
     def replace(self,topic,datas):        
         return self.db.child(topic).set(datas)
     
-    # atas will be inserted under/inside a random generated key by firebase
-    def add_under_random_key(self,topic,datas):        
+    # datas will be inserted under/inside a random generated key by firebase
+    def append(self,topic,datas):        
         return self.db.child(topic).push(datas)
         
     # datas must be 'dict' data type, insert to new under the topic and replace it if the key is existed
@@ -46,6 +46,9 @@ class Firebase():
         print(message["event"])
         print(message["path"])
         print(message["data"])
+
+    def convert_timestamp(self, timestamp):
+        return round(timestamp * 1000)
 
     def refresh_data(self):
         init_datas = {
@@ -74,45 +77,57 @@ class Firebase():
                     "traffic_light1":{
                             "light1":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
                             "light2":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
                             "light3":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
+                            "status": "",
+                            "malf_timestamp":{
+                                "timestamp":"timestamp"
+                            }
                         },
                     "traffic_light2":{
                             "light1":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
                             "light2":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
                             "light3":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
-                        },
+                            "status": "",
+                            "malf_timestamp": {
+                                "timestamp": "timestamp"
+                            }
+                    },
                     "traffic_light3":{
                             "light1":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
                             "light2":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
+                                "malf_timestamp":"timestamp"
                                 },
                             "light3":{
                                 "status":"flawless",
-                                "date_mulfunctioned":"timestamp"                                
-                                },                            
-                        },
+                                "malf_timestamp":"timestamp"
+                                },
+                            "status": "",
+                            "malf_timestamp": {
+                                "timestamp": "timestamp"
+                            }
+                    },
                 },
             "ambulance":{
                     "traffic_light1":[
@@ -131,14 +146,14 @@ class Firebase():
             "notifications":{
                     "unread": True,
                     "notification": {
-                            "timestamp1": "title(traffic_light1's light1 was mulfunctioned)",
-                            "timestamp2": "title(traffic_light2's light1 was mulfunctioned)",
+                            "timestamp1": "title(traffic_light1's light1 has malfunctioned)",
+                            "timestamp2": "title(traffic_light2's light1 has malfunctioned)",
                         },                                                    
                 }
         }    
         self.db.update("",init_datas)
 
-
     def remove_data(self,topic,key):
         return self.db.child(f"{topic}/{key}").remove()
+
         
