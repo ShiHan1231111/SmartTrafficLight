@@ -1,30 +1,11 @@
-from ComponentModule.InputComponentPackage.UltrasonicSensor import *
-from ComponentModule.InputComponentPackage.LightSensor import *
 from ComponentModule.OutputComponentPackage.GroveRelay import *
 from ComponentModule.InputComponentPackage.LightCheckPin import *
 
 from time import *
 from grovepi import *
 from pyrebase import pyrebase
-
-
-config = {
-    "apiKey":"AIzaSyDGGWQfuvSiiCPpL2MUIJi1HO_TdmscVlY",
-    "authDomain":"bait2123-iot-b0887.firebaseapp.com",
-    "databaseURL":"https://bait2123-iot-b0887-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    "storageBucket":"gs://bait2123-iot-b0887.appspot.com",
-}
-
-try:
-    firebase = pyrebase.initialize_app(config)
-    auth = firebase.auth()
-    user = auth.sign_in_with_email_and_password("kchongee@gmail.com","zt/h!\!*B;{)8/U$")
-    db = firebase.database()
-    storage = firebase.storage()
-except Exception as e:
-    print(e)
-    exit(-1)
-
+from Firebase import Firebase
+db = Firebase()
 
 # region : sensor declaration section
 redLED = GroveRelay(2)
@@ -36,11 +17,14 @@ checkYELLOW = LightCheckPin(6)
 checkGREEN = LightCheckPin(7)
 # endregion
 
+traffic_id="traffic_light1"
 
-def red_light(red_time):
-    redLED.turn_on()
+
+
+def red_light(pin, red_time):
+    pin.turn_on()
     is_red_functioning=check_red_light(red_time)
-    redLED.turn_off()
+    pin.turn_off()
     if is_red_functioning:
         return True
     else:
@@ -69,6 +53,7 @@ def green_light(green_time):
 
 def check_red_light(red_time):
     for loop_count in range(math.floor(red_time)):
+        sleep(0.00001)
         red_condition=checkRED.get_status()
         if red_condition==1:
             print("Red LED light has malfunctioned")
@@ -81,6 +66,7 @@ def check_red_light(red_time):
 
 def check_yellow_light():
     for loop_count in range(5):
+        sleep(0.00001)
         yellow_condition=checkYELLOW.get_status()
         if yellow_condition==1:
             print("Yellow LED light has malfunctioned")
@@ -93,6 +79,7 @@ def check_yellow_light():
 
 def check_green_light(green_time):
     for loop_count in range(math.floor(green_time)):
+        sleep(0.00001)
         green_condition=checkGREEN.get_status()
         if green_condition==1:
             print("Green LED light has malfunctioned")
@@ -107,6 +94,8 @@ def fault_shutdown():
     redLED.turn_off()
     yellowLED.turn_off()
     greenLED.turn_off()
+    db.update("traffic_lights/traffic_light1", {"status": 0})
+    db.append("traffic_lights/traffic_light1/malf_timestamp", {})
     return
 
 
@@ -143,7 +132,7 @@ def main():
             if red_light_good is not True or green_light_good is not True or yellow_light_good is not True:
                 fault_shutdown()
             else:
-                red_light_good = red_light(light_time)
+                red_light_good = red_light(redLED, light_time)
 
             if red_light_good is not True or green_light_good is not True or yellow_light_good is not True:
                 fault_shutdown()
@@ -156,6 +145,10 @@ def main():
                 yellow_light()
 
             [red_light_good, green_light_good, yellow_light_good] = check_lights_again()
+            if red_light_good is True and green_light_good is True and yellow_light_good is True:
+                db.update(f"traffic_lights/{traffic_id}", {"status": 1})
+                db.append(f"traffic_lights/{traffic_id}/malf_timestamp",
+                          {"timestamp": db.convert_timestamp(time.time())})
 
         except KeyboardInterrupt:
             break
