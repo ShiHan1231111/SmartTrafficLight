@@ -17,7 +17,7 @@ def record_audio():
     myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
     sd.wait()  # Wait until recording is finished
 
-    save_path = r'C:\Users\User\Desktop\Part1\record_sirens_audio'
+    save_path = r'record_sirens_audio'
 
     named_tuple = time.localtime()  # get struct_time
     time_string = time.strftime("%m-%d-%Y_%H%M%S", named_tuple)

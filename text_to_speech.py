@@ -19,7 +19,7 @@ language = 'id'
 # have a high speed  
 obj = gTTS(text=prompt, lang=language, slow=False)
 
-save_path = r'C:\Users\User\Desktop\Part1\audio'
+save_path = r'text_to_speech_audio'
 
 filename = os.path.join(save_path, reportFileName + ".mp3")
 
