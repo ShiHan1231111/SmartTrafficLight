@@ -7,6 +7,8 @@ import matplotlib.style as ms
 import sounddevice as sd
 from scipy.io.wavfile import write
 
+from Firebase import Firebase
+
 ms.use('seaborn-muted')
 
 
@@ -57,15 +59,19 @@ def detect_pitch(filename):
 
     if 990 <= pitch_detected <= 1250:
         print("Doppler effect detected.")
+        return True
     else:
         print("Not doppler effect detected")
+        return False
 
+db = Firebase()
 
 def main():
     while True:
         try:
             record_audio()
             time.sleep(1)
+            db.append("ambulance/traffic_light1",{"timestamp": db.convert_timestamp((time.time()))})
 
         except KeyboardInterrupt:
             break
