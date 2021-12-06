@@ -27,10 +27,52 @@ structure = {
             "TL003": "SWITCH"
         },
     },
-    "Traffic Light Status": {
-        "TL001": "Normal",
-        "TL002": "Normal",
-        "TL003": "Normal"
+
+    "TrafficLights": {
+        "TL001": {
+            "Red_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "Yellow_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "Green_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "status": "Normal",
+            "malf_timestamp": {
+                "timestamp": "timestamp"}
+        },
+
+        "TL002": {
+            "Red_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "Yellow_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "Green_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "status": "Normal",
+            "malf_timestamp": {
+                "timestamp": "timestamp"}
+        },
+
+        "TL003": {
+            "Red_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "Yellow_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "Green_Light": {
+                "status":"Normal",
+                "malf_timestamp": "timestamp"},
+            "status": "Normal",
+            "malf_timestamp": {
+                "timestamp": "timestamp"}
+        }
     }
 }
 

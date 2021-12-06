@@ -1,3 +1,5 @@
+import asyncio
+
 from ComponentModule.OutputComponentPackage.GroveRelay import *
 from ComponentModule.InputComponentPackage.LightCheckPin import *
 
@@ -6,8 +8,7 @@ from time import *
 from grovepi import *
 from pyrebase import pyrebase
 from Firebase import Firebase
-db = Firebase()
-
+fb = Firebase()
 
 
 class TrafficLight(object):
@@ -17,10 +18,12 @@ class TrafficLight(object):
         self.yellowLight = GroveRelay(yellow_pin)
         self.greenLight = GroveRelay(green_pin)
 
-        self.checkRED = LightCheckPin(red_check_pin)
-        self.checkYELLOW = LightCheckPin(yellow_check_pin)
-        self.checkGREEN = LightCheckPin(green_check_pin)
+        self.checkRed = LightCheckPin(red_check_pin)
+        self.checkYellow = LightCheckPin(yellow_check_pin)
+        self.checkGreen = LightCheckPin(green_check_pin)
 
+
+    '''
     def red_light(self, red_time):
         self.redLight.turn_on()
         is_red_functioning = self.check_red_light(red_time)
@@ -63,17 +66,17 @@ class TrafficLight(object):
             sleep(1)
         return True
 
-    def check_yellow_light(self):
+async def check_yellow_light(self):
         for loop_count in range(5):
-            sleep(0.00001)
+            await asyncio.sleep(0.00001)
             yellow_condition = self.checkYELLOW.get_status()
             if yellow_condition == 1:
                 print("Yellow LED light has malfunctioned")
-                return False
             else:
                 print("Yellow LED light is functioning")
-            sleep(1)
-        return True
+
+            await asyncio.sleep(1)
+
 
     def check_green_light(self, green_time):
         for loop_count in range(math.floor(green_time)):
@@ -100,6 +103,45 @@ class TrafficLight(object):
                         not (bool(self.checkGREEN.get_status())),
                         not (bool(self.checkYELLOW.get_status()))]
         return check_values
+'''
+
+    def report_faulty_red(self):
+        fb.update(f"TrafficLights/{self.name}/Red_Light", {"status": 0})
+        fb.update(f"TrafficLights/{self.name}/Red_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+
+    def report_faulty_yellow(self):
+        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"status": 0})
+        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+
+    def report_faulty_green(self):
+        fb.update(f"TrafficLights/{self.name}/Green_Light", {"status": 0})
+        fb.update(f"TrafficLights/{self.name}/Green_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+
+    def traffic_light_down(self):
+        self.redLight.turn_off()
+        self.yellowLight.turn_off()
+        self.greenLight.turn_off()
+        fb.update(f"TrafficLights/{self.name}", {"status": 0})
+        fb.append(f"TrafficLights/{self.name}/malf_timestamp", {"timestamp": fb.convert_timestamp(time.time())})
+
+    def red_light_fixed(self):
+        fb.update(f"TrafficLights/{self.name}/Red_Light", {"status": 1})
+        fb.update(f"TrafficLights/{self.name}/Red_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+
+    def yellow_light_fixed(self):
+        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"status": 1})
+        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+
+    def green_light_fixed(self):
+        fb.update(f"TrafficLights/{self.name}/Green_Light", {"status": 1})
+        fb.update(f"TrafficLights/{self.name}/Green_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+
+    def traffic_light_fixed(self):
+        fb.update(f"TrafficLights/{self.name}", {"status": 1})
+        fb.append(f"TrafficLights/{self.name}/malf_timestamp", {"timestamp": fb.convert_timestamp(time.time())})
+
+
+
 
 
 
