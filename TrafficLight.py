@@ -9,7 +9,7 @@ from Firebase import Firebase
 db = Firebase()
 
 
-class TrafficLight():
+class TrafficLight(object):
     def __init__(self, traffic_id, red_pin, yellow_pin, green_pin, red_check_pin, yellow_check_pin, green_check_pin):
         self.name = traffic_id
         self.redLight = GroveRelay(red_pin)
