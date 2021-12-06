@@ -100,7 +100,6 @@ async def yellow_transition():
 
 
 async def check_yellow_light():
-    count = 0
     for loop_count in range(5):
         await asyncio.sleep(0.00001)
         yellow_condition = TL.checkYellow.get_status()
@@ -142,7 +141,6 @@ async def green_on_off(green_time):
 
 
 async def check_green_light(green_time):
-    count = 0
     for loop_count in range(math.floor(green_time)):
         await asyncio.sleep(0.00001)
         green_condition = TL.checkGreen.get_status()
@@ -151,8 +149,6 @@ async def check_green_light(green_time):
             return False
         else:
             print("Green LED light is functioning")
-            if count < 1:
-                TL.green_light_fixed()
         await asyncio.sleep(1)
     return True
 
@@ -164,7 +160,6 @@ async def red_on_off(red_time):
 
 
 async def check_red_light(red_time):
-    count = 0
     for loop_count in range(math.floor(red_time)):
         await asyncio.sleep(0.00001)
         red_condition = TL.checkRed.get_status()
@@ -173,8 +168,6 @@ async def check_red_light(red_time):
             return False
         else:
             print("Red LED light is functioning")
-            if count < 1:
-                TL.red_light_fixed()
         await asyncio.sleep(1)
     return True
 
