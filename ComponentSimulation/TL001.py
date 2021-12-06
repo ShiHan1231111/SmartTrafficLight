@@ -1,7 +1,5 @@
-import asyncio
-
-from Firebase import Firebase
 from TrafficLight import *
+import asyncio
 
 ORDER = ["GREEN001", "RED001", "RED002"]
 ID = "TL001"
@@ -60,7 +58,7 @@ async def sleepHalfSec():
 
 async def main():
     light_time = 10
-    indicating_display(light_time)
+    await indicating_display(light_time)
     while True:
 
         sleepTask = asyncio.create_task(sleepHalfSec())
@@ -80,7 +78,7 @@ async def main():
             switch_to_next_order(ORDER.index(current_display))
 
             if yellow_functioning:
-                indicating_display(light_time)
+                await indicating_display(light_time)
             else:
                 TL.traffic_light_down()
 
@@ -89,7 +87,7 @@ async def main():
             ackTask = asyncio.create_task(ack.ack_switch_event())
             await asyncio.gather(redTask, ackTask)
             switch_to_next_order(ORDER.index(current_display))
-            indicating_display(light_time)
+            await indicating_display(light_time)
 
         else:
             pass
@@ -111,8 +109,6 @@ async def check_yellow_light():
             return False
         else:
             print("Yellow LED light is functioning")
-            if count < 1:
-                TL.yellow_light_fixed()
         await asyncio.sleep(1)
     return True
 
@@ -130,15 +126,13 @@ def switch_to_next_order(current_index):
     current_display = ORDER[next_index]
 
 
-def indicating_display(light_time):
+async def indicating_display(light_time):
     if current_display == "GREEN001":
         green_task = asyncio.create_task(green_on_off(light_time))
-        green_check = asyncio.create_task(check_green_light(light_time))
-        await asyncio.gather(green_task, green_check)
+        await green_task
     else:
         red_task = asyncio.create_task(red_on_off(light_time))
-        red_check = asyncio.create_task(check_red_light(light_time))
-        await asyncio.gather(red_task, red_check)
+        await red_task
 
 
 async def green_on_off(green_time):

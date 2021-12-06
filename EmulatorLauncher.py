@@ -1,6 +1,4 @@
 import logging
-
-from ComponentModule.InputComponentPackage.UltrasonicSensor import UltrasonicSensor
 from FakeDevices import *
 
 try:
@@ -16,7 +14,7 @@ try:
     gui.add(DigitalPin(6, 'CHECK YELLOW LIGHT'))
     gui.add(DigitalPin(7, 'CHECK GREEN LIGHT'))
 
-    from Main import *
+    from ComponentSimulation.TL001 import *
 except:
     logging.exception('-------------Log-------------------')
 

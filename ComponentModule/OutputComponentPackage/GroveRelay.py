@@ -4,6 +4,7 @@ from grovepi import *
 
 class GroveRelay(OutputComponent):
     def __init__(self, pin_number):
+        print(f"pin number is {pin_number}")
         super().__init__(pin_number)
 
     def turn_on(self):

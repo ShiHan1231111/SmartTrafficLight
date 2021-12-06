@@ -17,7 +17,7 @@ class TrafficLight(object):
         self.redLight = GroveRelay(red_pin)
         self.yellowLight = GroveRelay(yellow_pin)
         self.greenLight = GroveRelay(green_pin)
-
+        self.greenLight.turn_on()
         self.checkRed = LightCheckPin(red_check_pin)
         self.checkYellow = LightCheckPin(yellow_check_pin)
         self.checkGreen = LightCheckPin(green_check_pin)
@@ -129,15 +129,15 @@ async def check_yellow_light(self):
         fb.update(f"TrafficLights/{self.name}/Red_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
 
     def yellow_light_fixed(self):
-        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"status": 1})
-        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"status": 1})
+        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
 
     def green_light_fixed(self):
-        fb.update(f"TrafficLights/{self.name}/Green_Light", {"status": 1})
-        fb.update(f"TrafficLights/{self.name}/Green_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Green_Light", {"status": 1})
+        fb.append(f"TrafficLights/{self.name}/Green_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
 
     def traffic_light_fixed(self):
-        fb.update(f"TrafficLights/{self.name}", {"status": 1})
+        fb.append(f"TrafficLights/{self.name}", {"status": 1})
         fb.append(f"TrafficLights/{self.name}/malf_timestamp", {"timestamp": fb.convert_timestamp(time.time())})
 
 

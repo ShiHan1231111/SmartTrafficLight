@@ -13,7 +13,7 @@ class ServerIO(object):
         fb.update("Server/Order", new_order)
 
     @staticmethod
-    def update_all_to_switch():
+    async def update_all_to_switch():
         data = {"TL001": "SWITCH",
                 "TL002": "SWITCH",
                 "TL003": "SWITCH"}
