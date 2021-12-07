@@ -128,10 +128,12 @@ def switch_to_next_order(current_index):
 async def indicating_display(light_time):
     if current_display == "GREEN001":
         green_task = asyncio.create_task(green_on_off(light_time))
-        await green_task
+        green_check = asyncio.create_task(check_green_light(light_time))
+        await asyncio.gather(green_task, green_check)
     else:
         red_task = asyncio.create_task(red_on_off(light_time))
-        await red_task
+        red_check = asyncio.create_task(check_red_light(light_time))
+        await asyncio.gather(red_task, red_check)
 
 
 async def green_on_off(green_time):
