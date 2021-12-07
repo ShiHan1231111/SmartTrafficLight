@@ -5,6 +5,7 @@ from Firebase import Firebase
 fb = Firebase()
 
 structure = {
+    "Time":5,
     "Order": {
         "GREEN001": "TL001",
         "RED001": "TL002",
@@ -12,20 +13,26 @@ structure = {
     },
 
     "TrafficAmount": {
-        "RED001": "fetching......",
-        "RED002": "fetching......"
+        "RED001": "WAITING",
+        "RED002": "WAITING"
     },
 
     "Event": {
         "Ambulance": {
             "TL001": "FALSE",
             "TL002": "FALSE",
-            "TL003": "FALSE"},
+            "TL003": "FALSE"
+        },
         "Switch": {
             "TL001": "SWITCH",
             "TL002": "SWITCH",
             "TL003": "SWITCH"
         },
+        "Capture":{
+            "CM001":"CAP",
+            "CM002":"CAP",
+            "CM003":"CAP"
+        }
     },
 
     "TrafficLights": {
