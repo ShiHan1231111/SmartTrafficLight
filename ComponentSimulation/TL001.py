@@ -1,5 +1,6 @@
 from TrafficLight import *
 import asyncio
+from grove_rgb_lcd import *
 
 ORDER = ["GREEN001", "RED001", "RED002"]
 ID = "TL001"
@@ -73,14 +74,12 @@ async def main():
             yellow_check = asyncio.create_task(check_yellow_light())
             ackTask = asyncio.create_task(ack.ack_switch_event())
 
-            yellow_functioning = await asyncio.gather(yellowTask, ackTask, yellow_check)
+            await asyncio.gather(yellowTask, ackTask, yellow_check)
 
             switch_to_next_order(ORDER.index(current_display))
 
-            if yellow_functioning:
-                await indicating_display(light_time)
-            else:
-                TL.traffic_light_down()
+            await indicating_display(light_time)
+
 
         elif switch == "SWITCH" and current_display != "GREEN001":
             redTask = asyncio.create_task(red_transition())
@@ -143,7 +142,10 @@ async def green_on_off(green_time):
 
 
 async def check_green_light(green_time):
+    count = green_time
     for loop_count in range(math.floor(green_time)):
+        setText("Time Remaining: "+count+" seconds")
+        count -= 1
         await asyncio.sleep(0.00001)
         green_condition = TL.checkGreen.get_status()
         if green_condition == 1:
@@ -162,7 +164,10 @@ async def red_on_off(red_time):
 
 
 async def check_red_light(red_time):
+    count = red_time
     for loop_count in range(math.floor(red_time)):
+        setText("Time Remaining: "+count+" seconds")
+        count -= 1
         await asyncio.sleep(0.00001)
         red_condition = TL.checkRed.get_status()
         if red_condition == 1:

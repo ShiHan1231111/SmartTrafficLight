@@ -118,9 +118,6 @@ async def check_yellow_light(self):
         fb.update(f"TrafficLights/{self.name}/Green_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
 
     def traffic_light_down(self):
-        self.redLight.turn_off()
-        self.yellowLight.turn_off()
-        self.greenLight.turn_off()
         fb.update(f"TrafficLights/{self.name}", {"status": 0})
         fb.append(f"TrafficLights/{self.name}/malf_timestamp", {"timestamp": fb.convert_timestamp(time.time())})
 
