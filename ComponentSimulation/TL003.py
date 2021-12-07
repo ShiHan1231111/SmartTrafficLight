@@ -1,6 +1,7 @@
 from TrafficLight import *
 from Firebase import Firebase
 import asyncio
+from grove_rgb_lcd import *
 
 
 ORDER = ["GREEN001", "RED001", "RED002"]
@@ -145,7 +146,10 @@ async def green_on_off(green_time):
 
 
 async def check_green_light(green_time):
+    count = green_time
     for loop_count in range(math.floor(green_time)):
+        setText("Time Remaining: \n"+str(count)+" seconds")
+        count -= 1
         await asyncio.sleep(0.00001)
         green_condition = TL.checkGreen.get_status()
         if green_condition == 1:
@@ -164,7 +168,10 @@ async def red_on_off(red_time):
 
 
 async def check_red_light(red_time):
+    count = red_time
     for loop_count in range(math.floor(red_time)):
+        setText("Time Remaining: \n"+str(count)+" seconds")
+        count -= 1
         await asyncio.sleep(0.00001)
         red_condition = TL.checkRed.get_status()
         if red_condition == 1:

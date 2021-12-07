@@ -75,15 +75,13 @@ async def main():
             ackTask = asyncio.create_task(ack.ack_switch_event())
 
             await asyncio.gather(yellowTask, ackTask, yellow_check)
-
             switch_to_next_order(ORDER.index(current_display))
-
             await indicating_display(light_time)
-
 
         elif switch == "SWITCH" and current_display != "GREEN001":
             redTask = asyncio.create_task(red_transition())
             ackTask = asyncio.create_task(ack.ack_switch_event())
+
             await asyncio.gather(redTask, ackTask)
             switch_to_next_order(ORDER.index(current_display))
             await indicating_display(light_time)
@@ -144,7 +142,7 @@ async def green_on_off(green_time):
 async def check_green_light(green_time):
     count = green_time
     for loop_count in range(math.floor(green_time)):
-        setText("Time Remaining: "+count+" seconds")
+        setText("Time Remaining: \n"+str(count)+" seconds")
         count -= 1
         await asyncio.sleep(0.00001)
         green_condition = TL.checkGreen.get_status()
@@ -166,7 +164,7 @@ async def red_on_off(red_time):
 async def check_red_light(red_time):
     count = red_time
     for loop_count in range(math.floor(red_time)):
-        setText("Time Remaining: "+count+" seconds")
+        setText("Time Remaining: \n"+str(count)+" seconds")
         count -= 1
         await asyncio.sleep(0.00001)
         red_condition = TL.checkRed.get_status()
