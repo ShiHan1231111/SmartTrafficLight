@@ -194,7 +194,7 @@ def sleep_task(sleep_time):
 
 
 async def get_remaining_time_and_display_on_lcd():
-    await setText(f"Time Remaining: \n" + fb.access_by_path("Server/Time") + " seconds")
+    await setText(f"Time Remaining: \n" + str(fb.access_by_path("Server/Time")) + " seconds")
 
 
 def fetch_data_and_display_task():
