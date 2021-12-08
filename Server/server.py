@@ -1,12 +1,10 @@
 import asyncio
 
 from Server.AsynchronousTask import *
-from pyasn1.compat.octets import null
-from AsynchronousTask import *
 
 asynT = AsynchronousTask
-STANDARD_PERIOD = 15
-intelli_period = 15
+STANDARD_PERIOD = 9
+intelli_period = 9
 
 
 async def event_loop():
@@ -177,8 +175,8 @@ async def switch_road1_to_green():
 
 
 def start_ambulance_cycle():
-    # road = get_road_with_ambulance()
-    #
+
+    pass
 
 
 asyncio.run(event_loop())
