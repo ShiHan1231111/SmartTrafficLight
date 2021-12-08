@@ -73,6 +73,7 @@ async def main():
             ackTask = asyncio.create_task(ack.ack_switch_event())
 
             _,_,switch = await asyncio.gather(yellowTask, ackTask, yellow_check)
+            await asyncio.gather(yellowTask, ackTask, yellow_check)
             switch_to_next_order(ORDER.index(current_display))
             await indicating_display(switch)
 
@@ -149,7 +150,7 @@ async def check_green_light(switch_instruction):
             break
         else:
             setRGB(0, 255, 0)
-            await asyncio.gather(sleep_task(1), fetch_data_and_display_task())
+            await asyncio.gather(sleep_task(1), display_on_lcd())
             green_condition = TL.checkGreen.get_status()
             if green_condition == 1:
                 TL.report_faulty_green()
@@ -173,7 +174,7 @@ async def check_red_light(switch_instruction):
             break
         else:
             setRGB(255, 0, 0)
-            await asyncio.gather(sleep_task(1), fetch_data_and_display_task())
+            await asyncio.gather(sleep_task(1), display_on_lcd())
             green_condition = TL.checkGreen.get_status()
             if green_condition == 1:
                 TL.report_faulty_red()
@@ -192,12 +193,13 @@ def sleep_task(sleep_time):
     return asyncio.create_task(await_sleep(sleep_time))
 
 
-async def get_remaining_time_and_display_on_lcd():
-    await setText(f"Time Remaining: \n" + str(fb.access_by_path("Server/Time")) + " seconds")
+async def display_on_lcd():
+    count = await get_remaining_time()
+    await setText(f"Time Remaining: \n" + str(count) + " seconds")
 
 
-def fetch_data_and_display_task():
-    return asyncio.create_task(get_remaining_time_and_display_on_lcd())
+async def get_remaining_time():
+    return fb.access_by_path("Server/Time")
 
 
 
