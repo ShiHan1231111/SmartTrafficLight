@@ -29,9 +29,9 @@ structure = {
             "TL003": "SWITCH"
         },
         "Capture":{
-            "CM001":"CAP",
-            "CM002":"CAP",
-            "CM003":"CAP"
+            "CM001":"REQUEST_CAP",
+            "CM002":"REQUEST_CAP",
+            "CM003":"REQUEST_CAP"
         }
     },
 

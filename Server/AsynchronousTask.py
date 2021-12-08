@@ -42,6 +42,10 @@ class AsynchronousTask(object):
     def update_transition():
         return asyncio.create_task(await_update_transition())
 
+    @staticmethod
+    def update_cycle_period(time):
+        return asyncio.create_task(io.update_cycle_period(time))
+
 
 async def switch_tlight_order():
     old_order = io.get_tflight_order()

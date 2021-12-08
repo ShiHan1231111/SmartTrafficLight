@@ -43,3 +43,7 @@ class ServerIO(object):
     @staticmethod
     async def update_transitioning():
         fb.update("Server",{"Time":"Transition...."})
+
+    @staticmethod
+    async def update_cycle_period(period):
+        fb.update("Server",{"StaticPeriod":period})
