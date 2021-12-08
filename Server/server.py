@@ -176,4 +176,9 @@ async def switch_road1_to_green():
     return new_order
 
 
+def start_ambulance_cycle():
+    # road = get_road_with_ambulance()
+    #
+
+
 asyncio.run(event_loop())

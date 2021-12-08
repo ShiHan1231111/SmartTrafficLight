@@ -1,4 +1,4 @@
-from TrafficLight import *
+from TrafficLight.TrafficLight import *
 import asyncio
 from grove_rgb_lcd import *
 
