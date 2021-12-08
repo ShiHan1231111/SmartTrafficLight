@@ -100,6 +100,7 @@ async def check_yellow_light():
     for loop_count in range(3):
         setRGB(255, 165, 0)
         setText("Time Remaining: \n"+str(count)+" seconds")
+        count -= 1
         yellow_condition = TL.checkYellow.get_status()
         if yellow_condition == 1:
             TL.report_faulty_yellow()
