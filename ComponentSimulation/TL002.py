@@ -195,7 +195,7 @@ def sleep_task(sleep_time):
 
 async def display_on_lcd():
     count = await get_remaining_time()
-    await setText(f"Time Remaining: \n" + str(count) + " seconds")
+    setText(f"Time Remaining: \n" + str(count) + " seconds")
 
 
 async def get_remaining_time():
