@@ -1,8 +1,7 @@
 from TrafficLight.TrafficLight import *
-from Firebase import Firebase
 import asyncio
 from grove_rgb_lcd import *
-
+from ComponentSimulation.Firebase import Firebase
 
 ORDER = ["GREEN001", "RED001", "RED002"]
 ID = "TL002"
@@ -60,10 +59,7 @@ async def sleepHalfSec():
 
 
 async def main():
-    light_time = 10
-    indicating_display(light_time)
     while True:
-
         sleepTask = asyncio.create_task(sleepHalfSec())
         switchEvent = asyncio.create_task(e.listen_switch_event())
         await asyncio.gather(sleepTask, switchEvent)
@@ -76,21 +72,17 @@ async def main():
             yellow_check = asyncio.create_task(check_yellow_light())
             ackTask = asyncio.create_task(ack.ack_switch_event())
 
-            yellow_functioning = await asyncio.gather(yellowTask, ackTask, yellow_check)
-
+            await asyncio.gather(yellowTask, ackTask, yellow_check)
             switch_to_next_order(ORDER.index(current_display))
-
-            if yellow_functioning:
-                indicating_display(light_time)
-            else:
-                TL.traffic_light_down()
+            await indicating_display(switch)
 
         elif switch == "SWITCH" and current_display != "GREEN001":
             redTask = asyncio.create_task(red_transition())
             ackTask = asyncio.create_task(ack.ack_switch_event())
+
             await asyncio.gather(redTask, ackTask)
             switch_to_next_order(ORDER.index(current_display))
-            indicating_display(light_time)
+            await indicating_display(switch)
 
         else:
             pass
@@ -98,13 +90,16 @@ async def main():
 
 async def yellow_transition():
     TL.yellowLight.turn_on()
-    await asyncio.sleep(5)
+    await asyncio.sleep(3)
     TL.yellowLight.turn_off()
 
 
 async def check_yellow_light():
-    for loop_count in range(5):
-        await asyncio.sleep(0.00001)
+    count = 3
+    await asyncio.sleep(0.00001)
+    for loop_count in range(3):
+        setRGB(255, 165, 0)
+        setText("Time Remaining: \n"+str(count)+" seconds")
         yellow_condition = TL.checkYellow.get_status()
         if yellow_condition == 1:
             TL.report_faulty_yellow()
@@ -116,7 +111,7 @@ async def check_yellow_light():
 
 
 async def red_transition():
-    await asyncio.sleep(5)
+    await asyncio.sleep(3)
 
 
 def switch_to_next_order(current_index):
@@ -128,51 +123,90 @@ def switch_to_next_order(current_index):
     current_display = ORDER[next_index]
 
 
-def indicating_display(light_time):
+async def indicating_display(switch):
     if current_display == "GREEN001":
-        green_task = asyncio.create_task(green_on_off(light_time))
-        green_check = asyncio.create_task(check_green_light(light_time))
+        green_task = asyncio.create_task(green_on_off(switch))
+        green_check = asyncio.create_task(check_green_light(switch))
         await asyncio.gather(green_task, green_check)
     else:
-        red_task = asyncio.create_task(red_on_off(light_time))
-        red_check = asyncio.create_task(check_red_light(light_time))
+        red_task = asyncio.create_task(red_on_off(switch))
+        red_check = asyncio.create_task(check_red_light(switch))
         await asyncio.gather(red_task, red_check)
 
 
-async def green_on_off(green_time):
+async def green_on_off(switch_instruction):
     TL.greenLight.turn_on()
-    await asyncio.sleep(green_time)
-    TL.greenLight.turn_off()
+    if switch_instruction=="SWITCH":
+        TL.greenLight.turn_off()
 
 
-async def check_green_light(green_time):
-    count = green_time
-    for loop_count in range(math.floor(green_time)):
-        setText("Time Remaining: \n"+str(count)+" seconds")
-        count -= 1
-        await asyncio.sleep(0.00001)
-        green_condition = TL.checkGreen.get_status()
-        if green_condition == 1:
-            TL.report_faulty_green()
-            return False
+async def check_green_light(switch_instruction):
+    await asyncio.sleep(0.00001)
+    while True:
+        if switch_instruction == "SWITCH":
+            break
         else:
-            print("Green LED light is functioning")
+            setRGB(0, 255, 0)
+            await asyncio.gather(sleep_task(1), fetch_data_and_display_task())
+            green_condition = TL.checkGreen.get_status()
+            if green_condition == 1:
+                TL.report_faulty_green()
+                return False
+            else:
+                print("Green LED light is functioning")
         await asyncio.sleep(1)
     return True
 
 
-async def red_on_off(red_time):
+async def red_on_off(switch_instruction):
     TL.redLight.turn_on()
-    await asyncio.sleep(red_time)
-    TL.redLight.turn_off()
+    if switch_instruction == "SWITCH":
+        TL.redLight.turn_off()
 
 
+async def check_red_light(switch_instruction):
+    await asyncio.sleep(0.00001)
+    while True:
+        if switch_instruction == "SWITCH":
+            break
+        else:
+            setRGB(255, 0, 0)
+            await asyncio.gather(sleep_task(1), fetch_data_and_display_task())
+            green_condition = TL.checkGreen.get_status()
+            if green_condition == 1:
+                TL.report_faulty_red()
+                return False
+            else:
+                print("Red LED light is functioning")
+        await asyncio.sleep(1)
+    return True
+
+
+async def await_sleep(sleep_time):
+    await asyncio.sleep(sleep_time)
+
+
+def sleep_task(sleep_time):
+    return asyncio.create_task(await_sleep(sleep_time))
+
+
+async def get_remaining_time_and_display_on_lcd():
+    await setText(f"Time Remaining: \n" + fb.access_by_path("Server/Time") + " seconds")
+
+
+def fetch_data_and_display_task():
+    return asyncio.create_task(get_remaining_time_and_display_on_lcd())
+
+
+
+'''
 async def check_red_light(red_time):
     count = red_time
-    for loop_count in range(math.floor(red_time)):
-        setText("Time Remaining: \n"+str(count)+" seconds")
-        count -= 1
+    for loop_count in range(red_time):
         await asyncio.sleep(0.00001)
+        setRGB(255, 0, 0)
+        setText("Red Light: \n"+str(count)+" seconds")
+        count -= 1
         red_condition = TL.checkRed.get_status()
         if red_condition == 1:
             TL.report_faulty_red()
@@ -181,5 +215,6 @@ async def check_red_light(red_time):
             print("Red LED light is functioning")
         await asyncio.sleep(1)
     return True
+'''
 
 asyncio.run(main())

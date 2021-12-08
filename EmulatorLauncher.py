@@ -3,8 +3,6 @@ from FakeDevices import *
 
 try:
     gui = Gui()
-    gui.add(Ultrasonic(1, 'ultrasonicDevice'))
-    gui.add(AnalogReadPin(14, 'Light Sensor'))
 
     gui.add(DigitalPin(2, 'RED LED LIGHT'))
     gui.add(DigitalPin(3, 'YELLOW LED LIGHT'))
