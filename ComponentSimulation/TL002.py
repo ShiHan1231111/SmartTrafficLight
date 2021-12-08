@@ -72,6 +72,7 @@ async def main():
             yellow_check = asyncio.create_task(check_yellow_light())
             ackTask = asyncio.create_task(ack.ack_switch_event())
 
+            _,_,switch = await asyncio.gather(yellowTask, ackTask, yellow_check)
             await asyncio.gather(yellowTask, ackTask, yellow_check)
             switch_to_next_order(ORDER.index(current_display))
             await indicating_display(switch)
@@ -92,6 +93,7 @@ async def yellow_transition():
     TL.yellowLight.turn_on()
     await asyncio.sleep(3)
     TL.yellowLight.turn_off()
+    return "SWITCH"
 
 
 async def check_yellow_light():
@@ -100,6 +102,7 @@ async def check_yellow_light():
     for loop_count in range(3):
         setRGB(255, 165, 0)
         setText("Time Remaining: \n"+str(count)+" seconds")
+        count -= 1
         yellow_condition = TL.checkYellow.get_status()
         if yellow_condition == 1:
             TL.report_faulty_yellow()

@@ -72,7 +72,7 @@ async def main():
             yellow_check = asyncio.create_task(check_yellow_light())
             ackTask = asyncio.create_task(ack.ack_switch_event())
 
-            await asyncio.gather(yellowTask, ackTask, yellow_check)
+            _,_,switch = await asyncio.gather(yellowTask, ackTask, yellow_check)
             switch_to_next_order(ORDER.index(current_display))
             await indicating_display(switch)
 
@@ -92,6 +92,7 @@ async def yellow_transition():
     TL.yellowLight.turn_on()
     await asyncio.sleep(3)
     TL.yellowLight.turn_off()
+    return "SWITCH"
 
 
 async def check_yellow_light():
