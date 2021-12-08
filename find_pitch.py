@@ -57,6 +57,10 @@ def detect_pitch(filename):
     pitch_detected = round(sr / (interval.index(min_D) + 4), 2)
     print("Detected Pitch: {} Hz".format(pitch_detected))
 
+    doppler_effect(pitch_detected)
+
+
+def doppler_effect(pitch_detected):
     if 990 <= pitch_detected <= 1250:
         print("Doppler effect detected.")
         return True
@@ -64,14 +68,19 @@ def detect_pitch(filename):
         print("Not doppler effect detected")
         return False
 
-db = Firebase()
+
+fb = Firebase()
+
 
 def main():
     while True:
         try:
             record_audio()
+            doppler_effect()
+            if doppler_effect() is True:
+                fb.update("Server/Event/HAVEAMBULANCE", {"TF001": "True"})
+                fb.append("Server/Event/HAVEAMBULANCE", {"timestamp": fb.convert_timestamp(time.time())})
             time.sleep(1)
-            db.append("ambulance/traffic_light1",{"timestamp": db.convert_timestamp((time.time()))})
 
         except KeyboardInterrupt:
             break
