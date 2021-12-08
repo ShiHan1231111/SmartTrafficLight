@@ -20,7 +20,7 @@ class AsynchronousTask(object):
 
     @staticmethod
     async def async_print(text):
-        print(text)
+        return asyncio.create_task(await_async_print(text))
 
     @staticmethod
     def REQUEST_CAP(CAM_ID):
@@ -45,6 +45,22 @@ class AsynchronousTask(object):
     @staticmethod
     def update_cycle_period(time):
         return asyncio.create_task(io.update_cycle_period(time))
+
+    @staticmethod
+    def read_ambulance_state_from_database():
+        return asyncio.create_task(io.read_ambulance_state_from_database())
+
+    @staticmethod
+    def reset_ambulance_data():
+        return asyncio.create_task(io.reset_ambulance_record())
+
+
+async def await_async_print(text):
+    await asynchronous_print(text)
+
+
+async def asynchronous_print(text):
+    print(text)
 
 
 async def switch_tlight_order():

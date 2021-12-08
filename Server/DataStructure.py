@@ -19,9 +19,9 @@ structure = {
 
     "Event": {
         "Ambulance": {
-            "TL001": "FALSE",
-            "TL002": "FALSE",
-            "TL003": "FALSE"
+            "TL001": "NO AMBULANCE",
+            "TL002": "NO AMBULANCE",
+            "TL003": "NO AMBULANCE"
         },
         "Switch": {
             "TL001": "SWITCH",
