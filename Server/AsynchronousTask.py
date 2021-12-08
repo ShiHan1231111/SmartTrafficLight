@@ -54,6 +54,10 @@ class AsynchronousTask(object):
     def reset_ambulance_data():
         return asyncio.create_task(io.reset_ambulance_record())
 
+    @staticmethod
+    def check_ambulance_have_pass_flag():
+        return asyncio.create_task(io.read_ambulance_have_pass_flag())
+
 
 async def await_async_print(text):
     await asynchronous_print(text)

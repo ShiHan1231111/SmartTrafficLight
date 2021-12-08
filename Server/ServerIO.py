@@ -55,8 +55,13 @@ class ServerIO(object):
     @staticmethod
     async def reset_ambulance_record():
         initial_ambulance_data = {
+            "IS PASS": "NO AMBULANCE",
             "TL001": "NO AMBULANCE",
             "TL002": "NO AMBULANCE",
             "TL003": "NO AMBULANCE"
         }
         fb.update("Server/Event", {"Ambulance": initial_ambulance_data})
+
+    @staticmethod
+    async def read_ambulance_have_pass_flag():
+        return fb.access_by_path("Server/Event/Ambulance/IS PASS")

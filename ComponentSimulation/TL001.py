@@ -48,11 +48,11 @@ async def main():
             if current_display == "GREEN001":
                 red_transition_task = asyncio.create_task(red_transition())
                 ackTask = asyncio.create_task(ack.ack_switch_event(ID))
-                check_task = asyncio.create_task(check_green_light())
                 await asyncio.gather(red_transition_task, ackTask)
-                await check_task
+                print("CHEKING GREEN LIGHT")
+                await check_green_light()
 
-            elif current_display == "RED002":
+            elif current_display == "RED001":
                 yellow_trans = asyncio.create_task(yellow_transition())
                 yellow_check = asyncio.create_task(check_yellow_light(2))
                 ackTask = asyncio.create_task(ack.ack_switch_event(ID))
@@ -63,10 +63,14 @@ async def main():
                 red_check = asyncio.create_task(check_red_light())
                 await asyncio.gather(start_red_and_off_yellow, red_check)
 
-            elif current_display == "RED001":
-                await asyncio.sleep(3)
-                check_task = asyncio.create_task(check_red_light())
-                await check_task
+            elif current_display == "RED002":
+                print("OUTPUT LOG: TRANSITIONING.... RED001")
+                sleep_task_ = asyncio.create_task(asyncio.sleep(3))
+                on_red_task = asyncio.create_task(red_on())
+                off_green_task = asyncio.create_task(green_off())
+                ackTask = asyncio.create_task(ack.ack_switch_event(ID))
+                await asyncio.gather(sleep_task_,ackTask,on_red_task)
+                await check_red_light()
             else:
                 print("The order is not valid error")
                 # TODO: reset server table
@@ -92,6 +96,7 @@ async def check_yellow_light(time_of_checking):
 async def red_transition():
     await asyncio.sleep(3)
     await asyncio.gather(green_on(), red_off())
+    print("ACTION : ON GREEN....... OFF RED")
 
 
 def switch_to_next_order(current_index):
@@ -154,7 +159,7 @@ async def check_green_light():
         except TypeError:
             break
 
-        await asyncio.sleep(0.8)
+        await asyncio.sleep(0.5)
 
 
 async def check_red_light():
@@ -194,7 +199,6 @@ async def yellow_transition():
 
 async def start_red():
     await asyncio.gather(yellow_off(), red_on())
-
 
 
 '''

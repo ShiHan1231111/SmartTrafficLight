@@ -1,9 +1,9 @@
 import asyncio
 
 from datetime import date, datetime
-from NetworkComponent.Camera.CameraDevices.CapIO import *
-from NetworkComponent.Camera.CameraDevices.AsynchronousTask import AsynT
-from NetworkComponent.Camera.ImageAnalyzer.image_analyzer import analyze_image
+from ComponentSimulation.Camera.CameraDevices.CapIO import *
+from ComponentSimulation.Camera.CameraDevices.AsynchronousTask import AsynT
+from ComponentSimulation.Camera.ImageAnalyzer.image_analyzer import analyze_image
 
 CAM_ID = "CM001"
 TLID = "TL001"

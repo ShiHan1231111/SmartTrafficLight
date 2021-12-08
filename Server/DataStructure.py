@@ -19,6 +19,7 @@ structure = {
 
     "Event": {
         "Ambulance": {
+            "IS PASS":"AMBULANCE NOT PASS",
             "TL001": "NO AMBULANCE",
             "TL002": "NO AMBULANCE",
             "TL003": "NO AMBULANCE"
