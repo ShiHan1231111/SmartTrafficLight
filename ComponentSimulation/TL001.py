@@ -152,12 +152,12 @@ async def green_off():
 
 async def red_on():
     print("Displaying red................................")
-    TL.greenLight.turn_on()
+    TL.redLight.turn_on()
 
 
 async def red_off():
     print("turn off red..................................")
-    TL.greenLight.turn_off()
+    TL.redLight.turn_off()
 
 
 async def check_green_light(switch_instruction):
