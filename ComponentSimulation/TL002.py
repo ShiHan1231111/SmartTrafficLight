@@ -86,6 +86,7 @@ async def check_yellow_light(time_of_checking):
         setRGB(255, 165, 0)
         setText(f"Transitioning for {time_of_checking} second.........")
         yellow_condition = TL.checkYellow.get_status()
+        print(yellow_condition)
         if yellow_condition == 1:
             TL.report_faulty_yellow()
             return False
@@ -139,11 +140,12 @@ async def red_off():
 
 
 async def check_green_light():
+    await asyncio.sleep(0.00001)
     setRGB(0, 255, 0)
     while True:
-
+        await asyncio.sleep(0.5)
         green_condition = TL.checkGreen.get_status()
-
+        print(green_condition)
         if green_condition == 1:
             TL.report_faulty_green()
             return False
@@ -159,8 +161,6 @@ async def check_green_light():
         except TypeError:
             break
 
-        await asyncio.sleep(0.5)
-
 
 async def check_red_light():
     await asyncio.sleep(0.00001)
@@ -168,7 +168,7 @@ async def check_red_light():
     while True:
         await asyncio.sleep(0.5)
         red_condition = TL.checkRed.get_status()
-
+        print(red_condition)
         if red_condition == 1:
             TL.report_faulty_red()
             return False
