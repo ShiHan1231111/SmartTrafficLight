@@ -162,7 +162,6 @@ async def check_green_light():
             break
 
 
-
 async def check_red_light():
     await asyncio.sleep(0.00001)
     setRGB(255, 0, 0)
