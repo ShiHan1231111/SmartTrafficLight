@@ -42,8 +42,26 @@ class ServerIO(object):
 
     @staticmethod
     async def update_transitioning():
-        fb.update("Server",{"Time":"Transition...."})
+        fb.update("Server", {"Time": "Transition...."})
 
     @staticmethod
     async def update_cycle_period(period):
-        fb.update("Server",{"StaticPeriod":period})
+        fb.update("Server", {"StaticPeriod": period})
+
+    @staticmethod
+    async def read_ambulance_state_from_database():
+        return fb.access_by_path("Server/Event/Ambulance")
+
+    @staticmethod
+    async def reset_ambulance_record():
+        initial_ambulance_data = {
+            "IS PASS": "NO AMBULANCE",
+            "TL001": "NO AMBULANCE",
+            "TL002": "NO AMBULANCE",
+            "TL003": "NO AMBULANCE"
+        }
+        fb.update("Server/Event", {"Ambulance": initial_ambulance_data})
+
+    @staticmethod
+    async def read_ambulance_have_pass_flag():
+        return fb.access_by_path("Server/Event/Ambulance/IS PASS")

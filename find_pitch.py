@@ -78,8 +78,8 @@ def main():
             record_audio()
             doppler_effect()
             if doppler_effect() is True:
-                fb.update("Server/Event/HAVEAMBULANCE", {"TF001": "True"})
-                fb.append("Server/Event/HAVEAMBULANCE", {"timestamp": fb.convert_timestamp(time.time())})
+                fb.update("Event/AMBULANCE", {"TF001": "HAVE AMBULANCE"})
+                fb.append("Event/AMBULANCE", {"timestamp": fb.convert_timestamp(time.time())})
             time.sleep(1)
 
         except KeyboardInterrupt:

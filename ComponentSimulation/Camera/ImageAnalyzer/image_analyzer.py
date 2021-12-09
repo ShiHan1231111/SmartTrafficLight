@@ -7,16 +7,16 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from datetime import datetime
 from cv2 import cv2
-from NetworkComponent.Camera.ImageAnalyzer.ImageClass import ImageClass
-from NetworkComponent.Camera.ImageAnalyzer.MarkoutStyle import MarkoutStyle
-from NetworkComponent.Camera.ImageAnalyzer.Model import Model
-from NetworkComponent.Camera.ImageAnalyzer.PathInfo import PathInfo
-from NetworkComponent.Camera.ImageAnalyzer.SingleObjDetected import SingleObjDetected
+from ComponentSimulation.Camera.ImageAnalyzer.ImageClass import ImageClass
+from ComponentSimulation.Camera.ImageAnalyzer.MarkoutStyle import MarkoutStyle
+from ComponentSimulation.Camera.ImageAnalyzer.Model import Model
+from ComponentSimulation.Camera.ImageAnalyzer.PathInfo import PathInfo
+from ComponentSimulation.Camera.ImageAnalyzer.SingleObjDetected import SingleObjDetected
 
 
 def analyze_image(CAM_ID, img):
     have_gpu = False
-    input_size = 480
+    input_size = 320
     path = get_path_info()
     model = instantiate_model(path, have_gpu)
     style = getStyle(model)
@@ -25,7 +25,11 @@ def analyze_image(CAM_ID, img):
     # plt.show()
     image_class = ImageClass(img, input_size)
     model.analyze_image(image_class)
-    polygon_of_road = np.array([[440, 93], [370, 97], [346, 138], [505, 402], [609, 407], [612, 143]], np.int32)
+    if CAM_ID == "CM001":
+        polygon_of_road = np.array([[0,535],[637,134],[673,144],[701,200],[745,373],[623,719],[1,719]], np.int32)
+    else:
+        polygon_of_road = np.array([[1275, 719], [616, 719],[524, 376],[588, 163],[647, 148]],
+                                   np.int32)
     detected_classNames, obj_arr = postProcess(model.analysis_result, img, model, style, image_class, polygon_of_road)
     frequency, total_vehicle = label_data_to_image(detected_classNames, image_class, style, polygon_of_road, CAM_ID)
     return frequency, total_vehicle
@@ -87,17 +91,18 @@ def postProcess(outputs, img, model, style, image_class, polygon_of_road):
                     confidence_scores.append(float(confidence))
     indices = cv2.dnn.NMSBoxes(boxes, confidence_scores, model.confidence_threshold, model.nms_threshold)
     obj_arr = []
-    for i in indices.flatten():
-        coordinate = [boxes[i][0], boxes[i][1], boxes[i][2], boxes[i][3]]
-        color = [int(c) for c in style.colors[classIds[i]]]
-        name = model.class_names_arr[classIds[i]]
-        detected_classNames.append(name)
-        index = model.target_class_index_arr.index(classIds[i])
-        tempObj = SingleObjDetected(coordinate, color, name, confidence_scores[i], index)
-        image_class.draw_obj_name_and_conf_score(tempObj)
-        image_class.draw_bounding_box(tempObj)
-        obj_arr.append(tempObj)
-    return detected_classNames, obj_arr
+    if len(indices) > 0:
+        for i in indices.flatten():
+            coordinate = [boxes[i][0], boxes[i][1], boxes[i][2], boxes[i][3]]
+            color = [int(c) for c in style.colors[classIds[i]]]
+            name = model.class_names_arr[classIds[i]]
+            detected_classNames.append(name)
+            index = model.target_class_index_arr.index(classIds[i])
+            tempObj = SingleObjDetected(coordinate, color, name, confidence_scores[i], index)
+            image_class.draw_obj_name_and_conf_score(tempObj)
+            image_class.draw_bounding_box(tempObj)
+            obj_arr.append(tempObj)
+        return detected_classNames, obj_arr
 
 
 def label_data_to_image(detected_classNames, image_class, style, polygon_of_road, CAM_ID):

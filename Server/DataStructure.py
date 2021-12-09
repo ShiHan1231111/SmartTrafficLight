@@ -19,9 +19,10 @@ structure = {
 
     "Event": {
         "Ambulance": {
-            "TL001": "FALSE",
-            "TL002": "FALSE",
-            "TL003": "FALSE"
+            "IS PASS":"AMBULANCE NOT PASS",
+            "TL001": "NO AMBULANCE",
+            "TL002": "NO AMBULANCE",
+            "TL003": "NO AMBULANCE"
         },
         "Switch": {
             "TL001": "SWITCH",
@@ -29,9 +30,9 @@ structure = {
             "TL003": "SWITCH"
         },
         "Capture":{
-            "CM001":"REQUEST_CAP",
-            "CM002":"REQUEST_CAP",
-            "CM003":"REQUEST_CAP"
+            "CM001":"IDLE",
+            "CM002":"IDLE",
+            "CM003":"IDLE"
         }
     },
 
