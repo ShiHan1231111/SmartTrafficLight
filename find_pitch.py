@@ -14,7 +14,7 @@ ms.use('seaborn-muted')
 
 def record_audio():
     fs = 8000  # Sample rate
-    seconds = 10  # Duration of recording
+    seconds = 5  # Duration of recording
 
     myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
     sd.wait()  # Wait until recording is finished
@@ -57,29 +57,22 @@ def detect_pitch(filename):
     pitch_detected = round(sr / (interval.index(min_D) + 4), 2)
     print("Detected Pitch: {} Hz".format(pitch_detected))
 
-    doppler_effect(pitch_detected)
+    fb = Firebase()
 
-
-def doppler_effect(pitch_detected):
-    if 990 <= pitch_detected <= 1250:
+    if 650 <= pitch_detected <= 1550:
         print("Doppler effect detected.")
-        return True
+        fb.update("Server/Event/Ambulance", {"TL001": "Ambulance Pass"})
+        fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
     else:
         print("Not doppler effect detected")
-        return False
-
-
-fb = Firebase()
+        fb.update("Server/Event/Ambulance", {"TL001": "Not Ambulance Pass"})
+        fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
 
 
 def main():
     while True:
         try:
             record_audio()
-            doppler_effect()
-            if doppler_effect() is True:
-                fb.update("Event/AMBULANCE", {"TF001": "HAVE AMBULANCE"})
-                fb.append("Event/AMBULANCE", {"timestamp": fb.convert_timestamp(time.time())})
             time.sleep(1)
 
         except KeyboardInterrupt:
