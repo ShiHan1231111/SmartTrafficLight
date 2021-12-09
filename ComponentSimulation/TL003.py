@@ -12,9 +12,9 @@ ID = "TL003"
 redLight = 2
 yellowLight = 3
 greenLight = 4
-checkRed = 5
-checkYellow = 6
-checkGreen = 7
+checkRed = 7
+checkYellow = 8
+checkGreen = 5
 
 TL = TrafficLight(ID, redLight, yellowLight, greenLight, checkRed, checkYellow, checkGreen)
 
@@ -49,7 +49,7 @@ async def main():
                 red_transition_task = asyncio.create_task(red_transition())
                 ackTask = asyncio.create_task(ack.ack_switch_event(ID))
                 await asyncio.gather(red_transition_task, ackTask)
-                print("CHEKING GREEN LIGHT")
+                print("CHECKING GREEN LIGHT")
                 await check_green_light()
 
             elif current_display == "RED001":
