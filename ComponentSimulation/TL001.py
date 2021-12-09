@@ -140,9 +140,10 @@ async def red_off():
 
 
 async def check_green_light():
+    await asyncio.sleep(0.00001)
     setRGB(0, 255, 0)
     while True:
-
+        await asyncio.sleep(0.5)
         green_condition = TL.checkGreen.get_status()
         print(green_condition)
         if green_condition == 1:
@@ -160,7 +161,6 @@ async def check_green_light():
         except TypeError:
             break
 
-        await asyncio.sleep(0.5)
 
 
 async def check_red_light():
