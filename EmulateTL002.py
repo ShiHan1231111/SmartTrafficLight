@@ -12,7 +12,7 @@ try:
     gui.add(DigitalPin(8, 'CHECK YELLOW LIGHT'))
     gui.add(DigitalPin(5, 'CHECK GREEN LIGHT'))
 
-    from ComponentSimulation.TL001 import *
+    from ComponentSimulation.TL002 import *
 except:
     logging.exception('-------------Log-------------------')
 
