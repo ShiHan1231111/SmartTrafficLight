@@ -43,7 +43,9 @@ class Firebase():
     def read_live(self, topic, stream_handler=None):
         if stream_handler is None:
             stream_handler = self._stream_handler
-        return self.db.child(topic).stream(stream_handler)
+        value = self.db.child(topic).stream(stream_handler)
+        self.db.child(topic).stream(stream_handler).close()
+        return value
 
     def _stream_handler(self, message):
         print(message["event"])

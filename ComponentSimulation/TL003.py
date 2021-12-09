@@ -49,7 +49,7 @@ async def main():
                 red_transition_task = asyncio.create_task(red_transition())
                 ackTask = asyncio.create_task(ack.ack_switch_event(ID))
                 await asyncio.gather(red_transition_task, ackTask)
-                print("CHEKING GREEN LIGHT")
+                print("CHECKING GREEN LIGHT")
                 await check_green_light()
 
             elif current_display == "RED001":
