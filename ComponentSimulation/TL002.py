@@ -12,9 +12,9 @@ ID = "TL002"
 redLight = 2
 yellowLight = 3
 greenLight = 4
-checkRed = 5
-checkYellow = 6
-checkGreen = 7
+checkRed = 7
+checkYellow = 8
+checkGreen = 5
 
 TL = TrafficLight(ID, redLight, yellowLight, greenLight, checkRed, checkYellow, checkGreen)
 
