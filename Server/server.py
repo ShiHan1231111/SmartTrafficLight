@@ -33,8 +33,7 @@ async def event_loop():
 
             if is_time_to_capture(remaining_time, 8):
                 await reset_database_and_request_cap(CAM_ID1, CAM_ID2)
-                fb.update("Server/TrafficAmount", {"RED001": "44"})
-                fb.update("Server/TrafficAmount", {"RED002": "40"})
+
 
             if remaining_time < 8:
 

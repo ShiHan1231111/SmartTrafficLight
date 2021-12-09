@@ -80,11 +80,11 @@ async def main():
 
 
 async def check_yellow_light(time_of_checking):
-    count = time_of_checking
     await asyncio.sleep(0.00001)
     for loop_count in range(time_of_checking):
-        # setRGB(255, 165, 0)
-        # setText(f"Transitioning for {time_of_checking} second.........")
+        await asyncio.sleep(1)
+        setRGB(255, 165, 0)
+        setText(f"Transitioning for {time_of_checking} second.........")
         yellow_condition = TL.checkYellow.get_status()
         if yellow_condition == 1:
             TL.report_faulty_yellow()
@@ -151,7 +151,7 @@ async def check_green_light():
             print("Green LED light is functioning")
 
         remaining_time = fb.access_by_path("Server/Time")
-        print(remaining_time)
+        setText(f"Remaining time is {remaining_time}")
 
         try:
             if remaining_time <= 1:
@@ -176,7 +176,7 @@ async def check_red_light():
             print("Red LED light is functioning")
 
         remaining_time = fb.access_by_path("Server/Time")
-        print(remaining_time)
+        setText(f"Remaining time is {remaining_time}")
         try:
             if remaining_time <= 1:
                 break

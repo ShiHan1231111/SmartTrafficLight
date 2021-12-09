@@ -1,7 +1,7 @@
 import null
 import numpy as np
 
-from NetworkComponent.Camera.ImageAnalyzer.ImageClass import ImageClass
+from ComponentSimulation.Camera.ImageAnalyzer.ImageClass import ImageClass
 
 
 class SingleObjDetected(object):

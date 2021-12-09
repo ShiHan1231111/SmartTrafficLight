@@ -1,6 +1,6 @@
 import asyncio
 
-from NetworkComponent.Camera.CameraDevices.CapIO import *
+from ComponentSimulation.Camera.CameraDevices.CapIO import *
 
 io = CapIO
 
@@ -27,12 +27,12 @@ class AsynT(object):
         return asyncio.create_task(update_traffic(order, amount))
 
     @staticmethod
-    def update_traffic_data(key, complete_dict):
-        return asyncio.create_task(append_traffic_data(key, complete_dict))
+    def update_traffic_data(TLID, key, complete_dict):
+        return asyncio.create_task(append_traffic_data(TLID, key, complete_dict))
 
     @staticmethod
     def reset_waiting_state(order):
-        return asyncio.create_task()
+        return asyncio.create_task(order)
 
 
 async def listen_capture_event(CAM_ID):
@@ -53,5 +53,5 @@ async def update_traffic(order, amount):
     await io.update_traffic_amount(order, amount)
 
 
-async def append_traffic_data(key, complete_dict):
-    await io.append_traffic_data(key, complete_dict)
+async def append_traffic_data(TLID, key, complete_dict):
+    await io.append_traffic_data(TLID, key, complete_dict)
