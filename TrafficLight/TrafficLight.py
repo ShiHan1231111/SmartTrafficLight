@@ -105,32 +105,29 @@ async def check_yellow_light(self):
 '''
 
     def report_faulty_red(self):
-        fb.append(f"TrafficLights/{self.name}/Red_Light", {"status": "faulty"})
-        fb.append(f"TrafficLights/{self.name}/Red_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Red_Light", {"status": "faulty", "malf_timestamp": fb.create_time_stamp()})
+        fb.append("/Notifications/notification", {"unread": True, "title": f"{self.name} Red Light has malfunctioned", "timestamp": fb.create_time_stamp()})
 
     def report_faulty_yellow(self):
-        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"status": "faulty"})
-        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"status": "faulty", "malf_timestamp": fb.create_time_stamp()})
+        fb.append("/Notifications/notification", {"unread": True, "title": f"{self.name} Yellow Light has malfunctioned", "timestamp": fb.create_time_stamp()})
 
     def report_faulty_green(self):
-        fb.append(f"TrafficLights/{self.name}/Green_Light", {"status": "faulty"})
-        fb.append(f"TrafficLights/{self.name}/Green_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Green_Light", {"status": "faulty", "malf_timestamp": fb.create_time_stamp()})
+        fb.append("/Notifications/notification", {"unread": True, "title": f"{self.name} Green Light has malfunctioned", "timestamp": fb.create_time_stamp()})
 
     def traffic_light_down(self):
         fb.append(f"TrafficLights/{self.name}", {"status": 0})
         fb.append(f"TrafficLights/{self.name}/malf_timestamp", {"timestamp": fb.convert_timestamp(time.time())})
 
     def red_light_ok(self):
-        fb.append(f"TrafficLights/{self.name}/Red_Light", {"status": "functioning"})
-        fb.append(f"TrafficLights/{self.name}/Red_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Red_Light", {"status": "functioning", "malf_timestamp": fb.create_time_stamp()})
 
     def yellow_light_ok(self):
-        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"status": "functioning"})
-        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Yellow_Light", {"status": "functioning", "malf_timestamp": fb.create_time_stamp()})
 
     def green_light_ok(self):
-        fb.append(f"TrafficLights/{self.name}/Green_Light", {"status": "functioning"})
-        fb.append(f"TrafficLights/{self.name}/Green_Light", {"malf_timestamp": fb.convert_timestamp(time.time())})
+        fb.append(f"TrafficLights/{self.name}/Green_Light", {"status": "functioning", "malf_timestamp": fb.create_time_stamp()})
 
     def traffic_light_fixed(self):
         fb.append(f"TrafficLights/{self.name}", {"status": 1})
