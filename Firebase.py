@@ -1,3 +1,5 @@
+import time
+
 from pyrebase import pyrebase
 
 
@@ -53,99 +55,11 @@ class Firebase():
     def convert_timestamp(self, timestamp):
         return round(timestamp * 1000)
 
+    def create_time_stamp(self):
+        return self.convert_timestamp(time.time())
+
     def refresh_data(self):
         init_datas = {
-            "roads": {
-                "road1": {
-                    "timestamp": 0
-                },
-                "road2": {
-                    "timestamp": 0
-                },
-                "road3": {
-                    "timestamp": 0
-                }
-            },
-            "traffic_lights": {
-                "order": [
-                    "traffic_light1",
-                    "traffic_light2",
-                    "traffic_light3",
-                ],
-                "have_ambulance": "",
-                "interrupted": {
-                    "traffic_light": "",
-                    "remaining_seconds": ""
-                },
-                "traffic_light1": {
-                    "light1": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "light2": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "light3": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "status": "",
-                    "malf_timestamp": {
-                        "timestamp": "timestamp"
-                    }
-                },
-                "traffic_light2": {
-                    "light1": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "light2": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "light3": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "status": "",
-                    "malf_timestamp": {
-                        "timestamp": "timestamp"
-                    }
-                },
-                "traffic_light3": {
-                    "light1": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "light2": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "light3": {
-                        "status": "flawless",
-                        "malf_timestamp": "timestamp"
-                    },
-                    "status": "",
-                    "malf_timestamp": {
-                        "timestamp": "timestamp"
-                    }
-                },
-            },
-            "ambulance": {
-                "traffic_light1": [
-                    "timestamp",
-                    "timestamp",
-                ],
-                "traffic_light2": [
-                    "timestamp",
-                    "timestamp",
-                ],
-                "traffic_light3": [
-                    "timestamp",
-                    "timestamp",
-                ]
-            },
             "notifications": {
                 "unread": True,
                 "notification": {
@@ -166,5 +80,5 @@ class Firebase():
         nest = dict(data)
 
         for i in range(len(path_words) - 1):
-            nest = nest[path_words[i+1]]
-        return  nest
+            nest = nest[path_words[i + 1]]
+        return nest

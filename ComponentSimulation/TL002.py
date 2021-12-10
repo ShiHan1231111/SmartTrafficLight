@@ -1,6 +1,6 @@
 from TrafficLight.TrafficLight import *
 from grove_rgb_lcd import *
-from ComponentSimulation.Firebase import Firebase
+from Firebase import Firebase
 from TrafficLight.EventListener import EventListener
 from TrafficLight.EventAck import EventAck
 
@@ -9,9 +9,9 @@ import asyncio
 ORDER = ["GREEN001", "RED001", "RED002"]
 ID = "TL002"
 
-redLight = 2
+redLight = 4
 yellowLight = 3
-greenLight = 4
+greenLight = 2
 checkRed = 7
 checkYellow = 8
 checkGreen = 5
@@ -69,7 +69,7 @@ async def main():
                 on_red_task = asyncio.create_task(red_on())
                 off_green_task = asyncio.create_task(green_off())
                 ackTask = asyncio.create_task(ack.ack_switch_event(ID))
-                await asyncio.gather(sleep_task_,ackTask,on_red_task)
+                await asyncio.gather(sleep_task_, ackTask, on_red_task)
                 await check_red_light()
             else:
                 print("The order is not valid error")
@@ -77,21 +77,6 @@ async def main():
 
         else:
             pass
-
-
-async def check_yellow_light(time_of_checking):
-    await asyncio.sleep(0.00001)
-    for loop_count in range(time_of_checking):
-        await asyncio.sleep(1)
-        setRGB(255, 165, 0)
-        setText(f"Transitioning for {time_of_checking} second.........")
-        yellow_condition = TL.checkYellow.get_status()
-        print(yellow_condition)
-        if yellow_condition == 1:
-            TL.report_faulty_yellow()
-            return False
-        else:
-            print("Yellow LED light is functioning")
 
 
 async def red_transition():
@@ -147,13 +132,21 @@ async def check_green_light():
         green_condition = TL.checkGreen.get_status()
         print(green_condition)
         if green_condition == 1:
+            print("Green LED light has malfunctioned")
             TL.report_faulty_green()
             return False
         else:
+            TL.green_light_ok()
             print("Green LED light is functioning")
 
-        remaining_time = fb.access_by_path("Server/Time")
-        setText(f"Remaining time is {remaining_time}")
+        fetch_remaining_time_ = task_fetch_remaining_time()
+        fetch_ambulance_data_ = task_fetch_ambulance_data()
+        remaining_time, ambulance_data = await asyncio.gather(fetch_remaining_time_, fetch_ambulance_data_)
+        have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
+        if have_ambulance:
+            setText("Waiting for ambulance......")
+        else:
+            setText(f"Remaining time is {remaining_time}")
 
         try:
             if remaining_time <= 1:
@@ -170,18 +163,78 @@ async def check_red_light():
         red_condition = TL.checkRed.get_status()
         print(red_condition)
         if red_condition == 1:
+            print("Red LED light has malfunctioned")
             TL.report_faulty_red()
             return False
         else:
+            TL.red_light_ok()
             print("Red LED light is functioning")
 
-        remaining_time = fb.access_by_path("Server/Time")
-        setText(f"Remaining time is {remaining_time}")
+        fetch_remaining_time_ = task_fetch_remaining_time()
+        fetch_ambulance_data_ = task_fetch_ambulance_data()
+        remaining_time, ambulance_data = await asyncio.gather(fetch_remaining_time_, fetch_ambulance_data_)
+        have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
+        if have_ambulance:
+            setText("Waiting for ambulance......")
+        else:
+            setText(f"Remaining time is {remaining_time}")
         try:
             if remaining_time <= 1:
                 break
         except TypeError:
             break
+
+
+async def check_yellow_light(time_of_checking):
+    await asyncio.sleep(0.00001)
+    for loop_count in range(time_of_checking):
+        await asyncio.sleep(1)
+        setRGB(255, 165, 0)
+        setText(f"Transitioning for {time_of_checking} second.........")
+        yellow_condition = TL.checkYellow.get_status()
+        print(yellow_condition)
+        if yellow_condition == 1:
+            print("Yellow LED Light has malfunctioned")
+            TL.report_faulty_yellow()
+            return False
+        else:
+            TL.yellow_light_ok()
+            print("Yellow LED light is functioning")
+
+        ambulance_data = await fetch_ambulance_data()
+        have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
+        if have_ambulance:
+            setText("Waiting for ambulance......")
+        else:
+            pass
+
+
+async def fetch_ambulance_data():
+    ambulance_data = fb.access_by_path("Server/Event/Ambulance")
+    return ambulance_data
+
+
+async def fetch_remaining_time():
+    remaining_time = fb.access_by_path("Server/Time")
+    return remaining_time
+
+
+async def await_fetch_remaining_time():
+    remaining_time = await fetch_remaining_time()
+    return remaining_time
+
+
+async def await_fetch_ambulance_data():
+    ambulance_data = await fetch_ambulance_data()
+    return ambulance_data
+
+
+def task_fetch_ambulance_data():
+    return asyncio.create_task(await_fetch_ambulance_data())
+
+
+def task_fetch_remaining_time():
+    return asyncio.create_task(await_fetch_remaining_time())
 
 
 async def await_sleep(sleep_time):
@@ -217,5 +270,7 @@ async def check_red_light(red_time):
             print("Red LED light is functioning")
         await asyncio.sleep(1)
     return True
+
 '''
+
 asyncio.run(main())
