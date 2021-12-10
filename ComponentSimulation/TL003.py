@@ -9,9 +9,9 @@ import asyncio
 ORDER = ["GREEN001", "RED001", "RED002"]
 ID = "TL003"
 
-redLight = 2
+redLight = 4
 yellowLight = 3
-greenLight = 4
+greenLight = 2
 checkRed = 7
 checkYellow = 8
 checkGreen = 5
@@ -69,7 +69,7 @@ async def main():
                 on_red_task = asyncio.create_task(red_on())
                 off_green_task = asyncio.create_task(green_off())
                 ackTask = asyncio.create_task(ack.ack_switch_event(ID))
-                await asyncio.gather(sleep_task_,ackTask,on_red_task)
+                await asyncio.gather(sleep_task_, ackTask, on_red_task)
                 await check_red_light()
             else:
                 print("The order is not valid error")
@@ -136,10 +136,15 @@ async def check_green_light():
             TL.report_faulty_green()
             return False
         else:
+            TL.green_light_ok()
             print("Green LED light is functioning")
 
-        remaining_time = fb.access_by_path("Server/Time")
-        setText(f"Remaining time is {remaining_time}")
+        remaining_time, ambulance_data = await asyncio.gather(fetch_remaining_time, fetch_ambulance_data)
+        have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
+        if have_ambulance:
+            setText("Waiting for ambulance......")
+        else:
+            setText(f"Remaining time is {remaining_time}")
 
         try:
             if remaining_time <= 1:
@@ -160,6 +165,7 @@ async def check_red_light():
             TL.report_faulty_red()
             return False
         else:
+            TL.red_light_ok()
             print("Red LED light is functioning")
 
         remaining_time = fb.access_by_path("Server/Time")
@@ -184,7 +190,18 @@ async def check_yellow_light(time_of_checking):
             TL.report_faulty_yellow()
             return False
         else:
+            TL.yellow_light_ok()
             print("Yellow LED light is functioning")
+
+
+async def fetch_ambulance_data():
+    ambulance_data = fb.access_by_path("Server/Event/Ambulance")
+    return ambulance_data
+
+
+async def fetch_remaining_time():
+    remaining_time = fb.access_by_path("Server/Time")
+    return remaining_time
 
 
 async def await_sleep(sleep_time):
