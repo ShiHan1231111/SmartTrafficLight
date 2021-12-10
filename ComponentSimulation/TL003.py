@@ -79,21 +79,6 @@ async def main():
             pass
 
 
-async def check_yellow_light(time_of_checking):
-    await asyncio.sleep(0.00001)
-    for loop_count in range(time_of_checking):
-        await asyncio.sleep(1)
-        setRGB(255, 165, 0)
-        setText(f"Transitioning for {time_of_checking} second.........")
-        yellow_condition = TL.checkYellow.get_status()
-        print(yellow_condition)
-        if yellow_condition == 1:
-            TL.report_faulty_yellow()
-            return False
-        else:
-            print("Yellow LED light is functioning")
-
-
 async def red_transition():
     await asyncio.sleep(3)
     await asyncio.gather(green_on(), red_off())
@@ -147,6 +132,7 @@ async def check_green_light():
         green_condition = TL.checkGreen.get_status()
         print(green_condition)
         if green_condition == 1:
+            print("Green LED light has malfunctioned")
             TL.report_faulty_green()
             return False
         else:
@@ -170,6 +156,7 @@ async def check_red_light():
         red_condition = TL.checkRed.get_status()
         print(red_condition)
         if red_condition == 1:
+            print("Red LED light has malfunctioned")
             TL.report_faulty_red()
             return False
         else:
@@ -182,6 +169,22 @@ async def check_red_light():
                 break
         except TypeError:
             break
+
+
+async def check_yellow_light(time_of_checking):
+    await asyncio.sleep(0.00001)
+    for loop_count in range(time_of_checking):
+        await asyncio.sleep(1)
+        setRGB(255, 165, 0)
+        setText(f"Transitioning for {time_of_checking} second.........")
+        yellow_condition = TL.checkYellow.get_status()
+        print(yellow_condition)
+        if yellow_condition == 1:
+            print("Yellow LED Light has malfunctioned")
+            TL.report_faulty_yellow()
+            return False
+        else:
+            print("Yellow LED light is functioning")
 
 
 async def await_sleep(sleep_time):
