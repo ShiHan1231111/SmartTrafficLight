@@ -1,4 +1,4 @@
-from ComponentSimulation.Firebase import Firebase
+from Firebase import Firebase
 
 fb = Firebase()
 

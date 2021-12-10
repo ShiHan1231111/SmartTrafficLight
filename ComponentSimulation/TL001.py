@@ -1,6 +1,6 @@
 from TrafficLight.TrafficLight import *
 from grove_rgb_lcd import *
-from ComponentSimulation.Firebase import Firebase
+from Firebase import Firebase
 from TrafficLight.EventListener import EventListener
 from TrafficLight.EventAck import EventAck
 
@@ -139,7 +139,9 @@ async def check_green_light():
             TL.green_light_ok()
             print("Green LED light is functioning")
 
-        remaining_time, ambulance_data = await asyncio.gather(await_fetch_remaining_time, await_fetch_ambulance_data)
+        fetch_remaining_time_ = task_fetch_remaining_time()
+        fetch_ambulance_data_ = task_fetch_ambulance_data()
+        remaining_time, ambulance_data = await asyncio.gather(fetch_remaining_time_, fetch_ambulance_data_)
         have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
         if have_ambulance:
             setText("Waiting for ambulance......")
@@ -168,7 +170,9 @@ async def check_red_light():
             TL.red_light_ok()
             print("Red LED light is functioning")
 
-        remaining_time, ambulance_data = await asyncio.gather(await_fetch_remaining_time, await_fetch_ambulance_data)
+        fetch_remaining_time_ = task_fetch_remaining_time()
+        fetch_ambulance_data_ = task_fetch_ambulance_data()
+        remaining_time, ambulance_data = await asyncio.gather(fetch_remaining_time_, fetch_ambulance_data_)
         have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
         if have_ambulance:
             setText("Waiting for ambulance......")
@@ -215,14 +219,22 @@ async def fetch_remaining_time():
     return remaining_time
 
 
+async def await_fetch_remaining_time():
+    remaining_time = await fetch_remaining_time()
+    return remaining_time
+
+
 async def await_fetch_ambulance_data():
     ambulance_data = await fetch_ambulance_data()
     return ambulance_data
 
 
-async def await_fetch_remaining_time():
-    remaining_time = await fetch_remaining_time()
-    return remaining_time
+def task_fetch_ambulance_data():
+    return asyncio.create_task(await_fetch_ambulance_data())
+
+
+def task_fetch_remaining_time():
+    return asyncio.create_task(await_fetch_remaining_time())
 
 
 async def await_sleep(sleep_time):
@@ -258,5 +270,7 @@ async def check_red_light(red_time):
             print("Red LED light is functioning")
         await asyncio.sleep(1)
     return True
+
 '''
+
 asyncio.run(main())
