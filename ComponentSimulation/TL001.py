@@ -139,7 +139,7 @@ async def check_green_light():
             TL.green_light_ok()
             print("Green LED light is functioning")
 
-        remaining_time, ambulance_data = await asyncio.gather(fetch_remaining_time, fetch_ambulance_data)
+        remaining_time, ambulance_data = await asyncio.gather(await_fetch_remaining_time, await_fetch_ambulance_data)
         have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
         if have_ambulance:
             setText("Waiting for ambulance......")
@@ -168,8 +168,12 @@ async def check_red_light():
             TL.red_light_ok()
             print("Red LED light is functioning")
 
-        remaining_time = fb.access_by_path("Server/Time")
-        setText(f"Remaining time is {remaining_time}")
+        remaining_time, ambulance_data = await asyncio.gather(await_fetch_remaining_time, await_fetch_ambulance_data)
+        have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
+        if have_ambulance:
+            setText("Waiting for ambulance......")
+        else:
+            setText(f"Remaining time is {remaining_time}")
         try:
             if remaining_time <= 1:
                 break
@@ -193,6 +197,13 @@ async def check_yellow_light(time_of_checking):
             TL.yellow_light_ok()
             print("Yellow LED light is functioning")
 
+        ambulance_data = await fetch_ambulance_data()
+        have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
+        if have_ambulance:
+            setText("Waiting for ambulance......")
+        else:
+            pass
+
 
 async def fetch_ambulance_data():
     ambulance_data = fb.access_by_path("Server/Event/Ambulance")
@@ -201,6 +212,16 @@ async def fetch_ambulance_data():
 
 async def fetch_remaining_time():
     remaining_time = fb.access_by_path("Server/Time")
+    return remaining_time
+
+
+async def await_fetch_ambulance_data():
+    ambulance_data = await fetch_ambulance_data()
+    return ambulance_data
+
+
+async def await_fetch_remaining_time():
+    remaining_time = await fetch_remaining_time()
     return remaining_time
 
 
