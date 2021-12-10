@@ -1,6 +1,6 @@
 from mfrc522 import SimpleMFRC522
 import string
-import Firebase
+from Firebase import Firebase
 
 def trim(txt):
     return ''.join([c for c in txt if c in string.printable]).strip()
