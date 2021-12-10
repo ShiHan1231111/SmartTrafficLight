@@ -73,10 +73,18 @@ def detect_pitch(filename):
 
 def main():
     while True:
-
+        try:
             record_audio()
             time.sleep(1)
 
+        except KeyboardInterrupt:
+            break
+        except TypeError:
+            print("Type Error occurs")
+            break
+        except IOError:
+            print("IO Error Occurs")
+            break
 
 if __name__ == "__main__":
     main()
