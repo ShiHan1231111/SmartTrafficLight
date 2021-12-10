@@ -61,12 +61,14 @@ def detect_pitch(filename):
 
     if 650 <= pitch_detected <= 1550:
         print("Doppler effect detected.")
-        fb.update("Server/Event/Ambulance", {"TL001": "Ambulance Pass"})
+        fb.remove_data("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
+        fb.update("Server/Event/Ambulance", {"TL001": "Have Ambulance"})
         fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
     else:
         print("Not doppler effect detected")
-        fb.update("Server/Event/Ambulance", {"TL001": "Not Ambulance Pass"})
-        fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
+        fb.remove_data("Ambulance Data", {"Ambulance not passing": fb.convert_timestamp(time.time())})
+        fb.update("Server/Event/Ambulance", {"TL001": "No Ambulance"})
+        fb.append("Ambulance Data", {"Ambulance not passing": fb.convert_timestamp(time.time())})
 
 
 def main():
