@@ -1,6 +1,8 @@
 import os
 import glob
 import time
+from datetime import datetime, date
+
 import librosa
 import librosa.display
 import matplotlib.style as ms
@@ -19,16 +21,17 @@ def record_audio():
     myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
     sd.wait()  # Wait until recording is finished
 
-    save_path = r'../record_sirens_audio'
+    now = datetime.now()
+    time_string = now.strftime("%H-%M-%S")
 
-    named_tuple = time.localtime()  # get struct_time
-    time_string = time.strftime("%m-%d-%Y_%H%M%S", named_tuple)
+    current_dir = os.path.dirname(__file__)
+    filename = f"{str(date.today())}_{time_string}.wav"
+    file_path = os.path.join(current_dir, filename)
 
-    filename = os.path.join(save_path, time_string + ".wav")
+    write(file_path, fs, myrecording)
+    print(filename)
 
-    write(filename, fs, myrecording)
-
-    detect_pitch(filename)
+    detect_pitch(file_path)
 
 
 def camdf(y, sr, tau, N):
@@ -61,28 +64,18 @@ def detect_pitch(filename):
 
     if 650 <= pitch_detected <= 1550:
         print("Doppler effect detected.")
-        fb.update("Server/Event/Ambulance", {"IS PASS:": "HAVE PASSED","TL001": "Have Ambulance"})
+        fb.update("Server/Event/Ambulance", {"TL001": "HAVE AMBULANCE"})
         fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
     else:
         print("Not doppler effect detected")
-        fb.update("Server/Event/Ambulance", {"IS PASS:": "NOT PASSED","TL001": "No Ambulance"})
-        fb.append("Ambulance Data", {"Ambulance not passing": fb.convert_timestamp(time.time())})
+        fb.update("Server/Event/Ambulance",{"TL001": "NO AMBULANCE"})
 
 
 def main():
     while True:
-        try:
+
             record_audio()
             time.sleep(1)
-
-        except KeyboardInterrupt:
-            break
-        except TypeError:
-            print("Type Error occurs")
-            break
-        except IOError:
-            print("IO Error Occurs")
-            break
 
 
 if __name__ == "__main__":
