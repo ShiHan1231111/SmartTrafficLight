@@ -1,6 +1,0 @@
-
-class SynchronousTask(object):
-    pass
-
-
-
