@@ -3,12 +3,14 @@ import asyncio
 from Server.AsynchronousTask import *
 
 asynT = AsynchronousTask
-STANDARD_PERIOD = 10
-intelli_period = 10
+STANDARD_PERIOD = 8
+intelli_period = 8
 TRANSITION_PERIOD = 3
 
 
 async def event_loop():
+    TFFC_RED001 = 0
+    TFFC_RED002 = 0
     global intelli_period, TRANSITION_PERIOD
     while True:
         order = dict(io.get_tflight_order())
@@ -32,7 +34,7 @@ async def event_loop():
             if is_time_to_capture(remaining_time, 8):
                 await reset_database_and_request_cap(CAM_ID1, CAM_ID2)
 
-            if remaining_time < 7:
+            if remaining_time < 6:
 
                 if no_data_fetched(red001_traffic, red002_traffic) and is_required_read:
                     print("LOGIC LOG : NO DATA FETCHED")
@@ -97,7 +99,8 @@ async def event_loop():
             intelli_period = STANDARD_PERIOD
             await asynT.update_cycle_period(intelli_period)
             print("LOGIC LOG : ROAD1_HAVE_NO_CAR_BUT_ROAD2_HAVE")
-            order = await skip_road1_green_turn()
+            await switch_road_one_times()
+            await switch_road_one_times()
             print(f"LOG OUTPUT: TRANSITION PERIOD IS {TRANSITION_PERIOD}")
             await display_transition(TRANSITION_PERIOD)
             await asyncio.sleep(3)
