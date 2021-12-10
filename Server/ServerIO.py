@@ -65,3 +65,8 @@ class ServerIO(object):
     @staticmethod
     async def read_ambulance_have_pass_flag():
         return fb.access_by_path("Server/Event/Ambulance/IS PASS")
+
+    @staticmethod
+    async def reset_back_is_pass_flag_to_no_ambulance():
+        fb.update("Server/Event/Ambulance", {"IS PASS": "NO AMBULANCE"})
+

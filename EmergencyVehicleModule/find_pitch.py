@@ -1,6 +1,8 @@
 import os
 import glob
 import time
+from datetime import datetime, date
+
 import librosa
 import librosa.display
 import matplotlib.style as ms
@@ -14,21 +16,22 @@ ms.use('seaborn-muted')
 
 def record_audio():
     fs = 8000  # Sample rate
-    seconds = 10  # Duration of recording
+    seconds = 5  # Duration of recording
 
     myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
     sd.wait()  # Wait until recording is finished
 
-    save_path = r'record_sirens_audio'
+    now = datetime.now()
+    time_string = now.strftime("%H-%M-%S")
 
-    named_tuple = time.localtime()  # get struct_time
-    time_string = time.strftime("%m-%d-%Y_%H%M%S", named_tuple)
+    current_dir = os.path.dirname(__file__)
+    filename = f"{str(date.today())}_{time_string}.wav"
+    file_path = os.path.join(current_dir, filename)
 
-    filename = os.path.join(save_path, time_string + ".wav")
+    write(file_path, fs, myrecording)
+    print(filename)
 
-    write(filename, fs, myrecording)
-
-    detect_pitch(filename)
+    detect_pitch(file_path)
 
 
 def camdf(y, sr, tau, N):
@@ -57,30 +60,22 @@ def detect_pitch(filename):
     pitch_detected = round(sr / (interval.index(min_D) + 4), 2)
     print("Detected Pitch: {} Hz".format(pitch_detected))
 
-    if 990 <= pitch_detected <= 1250:
+    fb = Firebase()
+
+    if 650 <= pitch_detected <= 1550:
         print("Doppler effect detected.")
-        return True
+        fb.update("Server/Event/Ambulance", {"TL001": "HAVE AMBULANCE"})
+        fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
     else:
         print("Not doppler effect detected")
-        return False
+        fb.update("Server/Event/Ambulance",{"TL001": "NO AMBULANCE"})
 
-db = Firebase()
 
 def main():
     while True:
-        try:
+
             record_audio()
             time.sleep(1)
-            db.append("ambulance/traffic_light1",{"timestamp": db.convert_timestamp((time.time()))})
-
-        except KeyboardInterrupt:
-            break
-        except TypeError:
-            print("Type Error occurs")
-            break
-        except IOError:
-            print("IO Error Occurs")
-            break
 
 
 if __name__ == "__main__":

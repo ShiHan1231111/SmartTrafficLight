@@ -11,7 +11,7 @@ TFFC_RED002 = 5
 
 
 async def event_loop():
-    global intelli_period, TFFC_RED001, TFFC_RED002,TRANSITION_PERIOD
+    global intelli_period, TFFC_RED001, TFFC_RED002, TRANSITION_PERIOD
     order = dict(io.get_tflight_order())
     TFID_RED001, TFID_RED002 = order["RED001"], order['RED002']
     while True:
@@ -33,7 +33,6 @@ async def event_loop():
 
             if is_time_to_capture(remaining_time, 8):
                 await reset_database_and_request_cap(CAM_ID1, CAM_ID2)
-
 
             if remaining_time < 8:
 
@@ -239,7 +238,7 @@ async def start_ambulance_cycle():
 
     if have_ambulance:
         road_with_ambulance = get_key("HAVE AMBULANCE", ambulance_data)
-        order_of_road = get_key(road_with_ambulance,current_traffic_light_order)
+        order_of_road = get_key(road_with_ambulance, current_traffic_light_order)
         await asynT.reset_ambulance_data()
 
         if order_of_road == "GREEN001":
@@ -248,8 +247,10 @@ async def start_ambulance_cycle():
                 suspend_counter += 1
                 ambulance_have_passed = await asynT.check_ambulance_have_pass_flag()
                 if ambulance_have_passed == "HAVE PASSED":
+                    await asynT.reset_back_is_pass_to_no_ambulance()
                     break
                 if suspend_counter == 90:
+                    await asynT.reset_back_is_pass_to_no_ambulance()
                     print("Timeout error")
                     break
                 await asyncio.sleep(1)
@@ -262,11 +263,12 @@ async def start_ambulance_cycle():
             while True:
                 ambulance_counter += 1
                 ambulance_have_passed = await asynT.check_ambulance_have_pass_flag()
+                switch_road1 = asyncio.create_task(switch_road_one_times())
                 if ambulance_have_passed == "HAVE PASSED":
-                    await switch_road_one_times()
+                    await asyncio.gather(switch_road1, asynT.reset_back_is_pass_to_no_ambulance())
                     break
                 if ambulance_counter == 90:
-                    await switch_road_one_times()
+                    await asyncio.gather(switch_road1, asynT.reset_back_is_pass_to_no_ambulance())
                     print("Timeout error")
                     break
                 await asyncio.sleep(1)
@@ -278,11 +280,12 @@ async def start_ambulance_cycle():
             while True:
                 ambulance_counter += 1
                 ambulance_have_passed = await asynT.check_ambulance_have_pass_flag()
+                switch_road2 = switch_road_two_times()
                 if ambulance_have_passed == "HAVE PASSED":
-                    await switch_road_two_times()
+                    await asyncio.gather(switch_road2, asynT.reset_back_is_pass_to_no_ambulance())
                     break
                 if ambulance_counter == 90:
-                    await switch_road_two_times()
+                    await asyncio.gather(switch_road2, asynT.reset_back_is_pass_to_no_ambulance())
                     print("Timeout error")
                     break
                 await asyncio.sleep(1)

@@ -58,6 +58,10 @@ class AsynchronousTask(object):
     def check_ambulance_have_pass_flag():
         return asyncio.create_task(io.read_ambulance_have_pass_flag())
 
+    @staticmethod
+    def reset_back_is_pass_to_no_ambulance():
+        return asyncio.create_task(await_reset_back_is_pass_to_no_ambulance())
+
 
 async def await_async_print(text):
     await asynchronous_print(text)
@@ -97,6 +101,9 @@ async def obtain_cam_id(traffic_light_id):
         return "CM002"
     else:
         return "CM003"
+
+async def await_reset_back_is_pass_to_no_ambulance():
+    await io.reset_back_is_pass_flag_to_no_ambulance()
 
 
 async def await_obtain_cam_id(traffic_light_id):
