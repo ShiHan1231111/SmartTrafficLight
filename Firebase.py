@@ -4,7 +4,7 @@ from pyrebase import pyrebase
 
 
 class Firebase():
-    def _init_(self):
+    def __init__(self):
         config = {
             "apiKey": "AIzaSyDGGWQfuvSiiCPpL2MUIJi1HO_TdmscVlY",
             "authDomain": "bait2123-iot-b0887.firebaseapp.com",
@@ -82,4 +82,3 @@ class Firebase():
         for i in range(len(path_words) - 1):
             nest = nest[path_words[i + 1]]
         return nest
-
