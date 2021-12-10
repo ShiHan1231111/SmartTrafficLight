@@ -65,7 +65,6 @@ def detect_pitch(filename):
         fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
     else:
         print("Not doppler effect detected")
-        fb.remove_data("Ambulance Data", {"Ambulance not passing": fb.convert_timestamp(time.time())})
         fb.update("Server/Event/Ambulance", {"IS PASS:": "NOT PASSED","TL001": "No Ambulance"})
         fb.append("Ambulance Data", {"Ambulance not passing": fb.convert_timestamp(time.time())})
 
