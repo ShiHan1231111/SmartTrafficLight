@@ -4,7 +4,6 @@ from ComponentModule.OutputComponentPackage.GroveRelay import *
 from ComponentModule.InputComponentPackage.LightCheckPin import *
 
 import time
-from time import *
 from grovepi import *
 from pyrebase import pyrebase
 from Firebase import Firebase
