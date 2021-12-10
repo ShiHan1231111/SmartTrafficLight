@@ -68,7 +68,7 @@ def detect_pitch(filename):
         fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
     else:
         print("Not doppler effect detected")
-        fb.update("Server/Event/Ambulance",{"TL001": "NO AMBULANCE"})
+        fb.update("Server/Event/Ambulance", {"TL001": "NO AMBULANCE"})
 
 
 def main():
@@ -85,6 +85,7 @@ def main():
         except IOError:
             print("IO Error Occurs")
             break
+
 
 if __name__ == "__main__":
     main()
