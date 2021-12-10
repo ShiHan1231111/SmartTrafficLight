@@ -24,7 +24,10 @@ while True:
     id, text = reader.read_sector(sector)
     text = trim(text)
     print(f'id: {id}, text: {text}\n')
-    print("Access permitted")
-    fb = Firebase()
-    fb.update("RFID", {"IS SCAN:": "SCANNED", "TL001": "Ambulance Detected"})
+
+    fb =Firebase()
+    if "ambulance" in text:
+        print("Access permitted")
+        fb.update("Server/Event/Ambulance", {"IS PASS": "HAVE PASSED"})
+
 
