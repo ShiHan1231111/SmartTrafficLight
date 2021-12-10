@@ -19,7 +19,7 @@ def record_audio():
     myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
     sd.wait()  # Wait until recording is finished
 
-    save_path = r'record_sirens_audio'
+    save_path = r'../record_sirens_audio'
 
     named_tuple = time.localtime()  # get struct_time
     time_string = time.strftime("%m-%d-%Y_%H%M%S", named_tuple)
@@ -61,13 +61,12 @@ def detect_pitch(filename):
 
     if 650 <= pitch_detected <= 1550:
         print("Doppler effect detected.")
-        fb.remove_data("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
-        fb.update("Server/Event/Ambulance", {"TL001": "Have Ambulance"})
+        fb.update("Server/Event/Ambulance", {"IS PASS:": "HAVE PASSED","TL001": "Have Ambulance"})
         fb.append("Ambulance Data", {"Ambulance passing": fb.convert_timestamp(time.time())})
     else:
         print("Not doppler effect detected")
         fb.remove_data("Ambulance Data", {"Ambulance not passing": fb.convert_timestamp(time.time())})
-        fb.update("Server/Event/Ambulance", {"TL001": "No Ambulance"})
+        fb.update("Server/Event/Ambulance", {"IS PASS:": "NOT PASSED","TL001": "No Ambulance"})
         fb.append("Ambulance Data", {"Ambulance not passing": fb.convert_timestamp(time.time())})
 
 
