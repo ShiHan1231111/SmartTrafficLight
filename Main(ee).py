@@ -4,19 +4,26 @@ import time
 from Firebase import Firebase
 import threading
 import random
+from twilio.rest import Client
 
 e = threading.Event()
 db = Firebase()
+account_sid = "AC2df53bf36a712d732e12b1db71cf25e1"
+auth_token = "c66631d83eaca5c894fcc427dc65c3c8"
 
 def main():    
     # region : sensor declaration section
     ultrasonic_sensor = UltrasonicSensor(1)
     light_sensor = LightSensor(14)
-    # endregion    
+    # endregion
+        
+    push_malfunc_notification("TL001","Red_Light",curr_status=0)
     
+    '''
     push_dummy_data()
     print("finish")
-    return ""    
+    return ""
+    '''
     
     '''
     db.refresh_data()
@@ -83,10 +90,7 @@ def convertTimestamp(timestamp):
 
 def push_dummy_data():
     for i in range(10):
-        db.append("/roads/road1",{"carCount":random.randint(0,101),"timestamp":convertTimestamp(time.time())})
         '''
-        db.append("/roads/road2",{"carCount":random.randint(0,101),"timestamp":convertTimestamp(time.time())})
-        db.append("/roads/road3",{"carCount":random.randint(0,101),"timestamp":convertTimestamp(time.time())})
         db.append("/ambulance/traffic_light1",{"timestamp":convertTimestamp(time.time())})
         db.append("/ambulance/traffic_light2",{"timestamp":convertTimestamp(time.time())})
         db.append("/ambulance/traffic_light3",{"timestamp":convertTimestamp(time.time())})
@@ -96,6 +100,51 @@ def push_dummy_data():
         db.append("/notifications/notification",{"title":"Patricia's friend who was here hardly had any issues at all, but she wasn't telling the truth. Yesterday, before she left to go home, she heard that her husband is in the hospital and pretended to be surprised. It later came out that she was the person who had put him there.","timestamp":convertTimestamp(time.time())})
         db.append("/turning",{"left":random.randint(0,101),"right":random.randint(0,101),"timestamp":convertTimestamp(time.time())})
         '''
+        
+        carCount = random.randint(0,51)
+        truckCount = random.randint(0,51)
+        total = carCount+truckCount
+        db.append("/Traffic Data/TL001",{"car":carCount,"truck":truckCount,"Total":total,"timestamp":convertTimestamp(time.time())})
+        sleep(5)
+        carCount = random.randint(0,51)
+        truckCount = random.randint(0,51)
+        total = carCount+truckCount
+        db.append("/Traffic Data/TL002",{"car":carCount,"truck":truckCount,"Total":total,"timestamp":convertTimestamp(time.time())})
+        sleep(5)
+        carCount = random.randint(0,51)
+        truckCount = random.randint(0,51)
+        total = carCount+truckCount
+        db.append("/Traffic Data/TL003",{"car":carCount,"truck":truckCount,"Total":total,"timestamp":convertTimestamp(time.time())})
+        sleep(5)
+        
+def push_fixed_notification(name,light_name,curr_status):
+    if is_status_diff(name,light_name,curr_status):
+        db.append("/Notifications/notification", {"unread": True, "title": f"Malfunctioned {name} {light_name.replace('_',' ')} has been fixed", "timestamp": convertTimestamp(time.time())})
+        print("pushed fixed")
+        
+def is_status_diff(name,light_name,curr_status):
+    print(light_name)
+    prev_status = db.read(f"/TrafficLights/{name}/{light_name}")["status"]
+    print(prev_status)
+    return True if prev_status != curr_status else False
+
+def push_malfunc_notification(name,light_name,curr_status):
+    if is_status_diff(name,light_name,curr_status):
+        db.append("/Notifications/notification", {"unread": True, "title": f"{name} {light_name.replace('_',' ')} has malfunctioned", "timestamp": convertTimestamp(time.time())})
+        send_message(name,light_name)
+        print("pushed malfunc")
+        
+
+def send_message(name,light_name):
+    client = Client(account_sid, auth_token)
+    message = client.messages \
+            .create(
+                body=f"{name} {light_name.replace('_',' ')} has malfunctioned",
+                from_='+14752501567',
+                to='+6011-11715229'
+            )
+    print(message.status)
+
 
 main()
 
