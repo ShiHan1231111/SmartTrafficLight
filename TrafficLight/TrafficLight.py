@@ -6,8 +6,11 @@ import time
 from grovepi import *
 from pyrebase import pyrebase
 from Firebase import Firebase
+from twilio.rest import Client
 fb = Firebase()
 
+account_sid = "AC2df53bf36a712d732e12b1db71cf25e1"
+auth_token = "c66631d83eaca5c894fcc427dc65c3c8"
 
 class TrafficLight(object):
     def __init__(self, traffic_id, red_pin, yellow_pin, green_pin, red_check_pin, yellow_check_pin, green_check_pin):
@@ -104,16 +107,16 @@ async def check_yellow_light(self):
 '''
 
     def report_faulty_red(self):
-        fb.update(f"TrafficLights/{self.name}/Red_Light", {"status": "faulty", "malf_timestamp": fb.create_time_stamp()})
-        fb.append("/Notifications/notification", {"unread": True, "title": f"{self.name} Red Light has malfunctioned", "timestamp": fb.create_time_stamp()})
+        fb.update(f"TrafficLights/{self.name}/Red_Light", {"status": 0, "malf_timestamp": fb.create_time_stamp()})        
+        push_malfunc_notification(self.name,"Red_Light",curr_status=0)
 
     def report_faulty_yellow(self):
-        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"status": "faulty", "malf_timestamp": fb.create_time_stamp()})
-        fb.append("/Notifications/notification", {"unread": True, "title": f"{self.name} Yellow Light has malfunctioned", "timestamp": fb.create_time_stamp()})
+        fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"status": 0, "malf_timestamp": fb.create_time_stamp()})
+        push_malfunc_notification(self.name,"Yellow_Light",curr_status=0)
 
     def report_faulty_green(self):
-        fb.update(f"TrafficLights/{self.name}/Green_Light", {"status": "faulty", "malf_timestamp": fb.create_time_stamp()})
-        fb.append("/Notifications/notification", {"unread": True, "title": f"{self.name} Green Light has malfunctioned", "timestamp": fb.create_time_stamp()})
+        fb.update(f"TrafficLights/{self.name}/Green_Light", {"status": 0, "malf_timestamp": fb.create_time_stamp()})
+        push_malfunc_notification(self.name,"Green_Light",curr_status=0)
 
     def traffic_light_down(self):
         fb.append(f"TrafficLights/{self.name}", {"status": 0})
@@ -121,23 +124,44 @@ async def check_yellow_light(self):
 
     def red_light_ok(self):
         fb.update(f"TrafficLights/{self.name}/Red_Light", {"status":1, "malf_timestamp":0})
-        fb.append("/Notifications/notification", {"unread": True, "title": f"Malfunctioned {self.name} Green Light has been fixed", "timestamp": fb.create_time_stamp()})
+        push_fixed_notification(self.name,"Red_Light",curr_status=1)
 
     def yellow_light_ok(self):
         fb.update(f"TrafficLights/{self.name}/Yellow_Light", {"status":1, "malf_timestamp":0})
-        fb.append("/Notifications/notification", {"unread": True, "title": f"Malfunctioned {self.name} Green Light has been fixed", "timestamp": fb.create_time_stamp()})
+        push_fixed_notification(self.name,"Yellow_Light",curr_status=1)        
 
     def green_light_ok(self):
         fb.update(f"TrafficLights/{self.name}/Green_Light", {"status":1, "malf_timestamp":0})
-        fb.append("/Notifications/notification", {"unread": True, "title": f"Malfunctioned {self.name} Green Light has been fixed", "timestamp": fb.create_time_stamp()})
+        push_fixed_notification(self.name,"Green_Light",curr_status=1)
 
     def traffic_light_fixed(self):
         fb.append(f"TrafficLights/{self.name}", {"status": 1})
         fb.append(f"TrafficLights/{self.name}/malf_timestamp", {"timestamp": fb.convert_timestamp(time.time())})
 
 
-
-
+def send_message(name,light_name):
+    client = Client(account_sid, auth_token)
+    message = client.messages \
+            .create(
+                body=f"{name} {light_name.replace('_',' ')} has malfunctioned",
+                from_='+14752501567',
+                to='+6011-11715229'
+            )
+    print(message.status)
+    
+def push_malfunc_notification(name,light_name,curr_status):
+    if is_status_diff(name,light_name,curr_status):
+        fb.append("/Notifications/notification", {"unread": True, "title": f"{name} {light_name.replace('_',' ')} has malfunctioned", "timestamp": fb.create_time_stamp()})
+        send_message(name,light_name)
+    
+def push_fixed_notification(name,light_name,curr_status):
+    if is_status_diff(name,light_name,curr_status):
+        fb.append("/Notifications/notification", {"unread": True, "title": f"Malfunctioned {name} {light_name.replace('_',' ')} has been fixed", "timestamp": fb.create_time_stamp()})
+        
+def is_status_diff(name,light_name,curr_status):
+    prev_status = db.read(f"/TrafficLights/{name}/{light_name}")["status"]    
+    return True if prev_status != curr_status else False
+    
 
 
 
