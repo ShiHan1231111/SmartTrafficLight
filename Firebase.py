@@ -6,10 +6,10 @@ from pyrebase import pyrebase
 class Firebase():
     def __init__(self):
         config = {
-            "apiKey": "AIzaSyDGGWQfuvSiiCPpL2MUIJi1HO_TdmscVlY",
-            "authDomain": "bait2123-iot-b0887.firebaseapp.com",
-            "databaseURL": "https://bait2123-iot-b0887-default-rtdb.asia-southeast1.firebasedatabase.app/",
-            "storageBucket": "gs://bait2123-iot-b0887.appspot.com",
+            "apiKey": "AIzaSyDekk741MySs8fpAVO_RkZqWD-lBOI_U2c",
+            "authDomain": "smarttl-e6d87.firebaseapp.com",
+            "databaseURL": "https://smarttl-e6d87-default-rtdb.asia-southeast1.firebasedatabase.app",
+            "storageBucket": "smarttl-e6d87.appspot.com",
         }
         try:
             self.firebase = pyrebase.initialize_app(config)
