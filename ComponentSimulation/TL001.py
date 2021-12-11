@@ -44,6 +44,7 @@ async def main():
 
         if switch == "SWITCH":
             current_display = get_key(ID, fb.access_by_path("Server/Order"))
+            print(current_display)
             print(f"Current Display is {current_display}")
             if current_display == "GREEN001":
                 red_transition_task = asyncio.create_task(red_transition())
