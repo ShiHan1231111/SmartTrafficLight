@@ -27,8 +27,8 @@ class AsynT(object):
         return asyncio.create_task(update_traffic(order, amount))
 
     @staticmethod
-    def update_traffic_data(TLID, key, complete_dict):
-        return asyncio.create_task(append_traffic_data(TLID, key, complete_dict))
+    def update_traffic_data(complete_dict_with_timestamp, TLID):
+        return asyncio.create_task(io.append_traffic_data(complete_dict_with_timestamp, TLID))
 
     @staticmethod
     def reset_waiting_state(order):

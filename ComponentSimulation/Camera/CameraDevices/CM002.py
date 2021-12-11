@@ -16,9 +16,10 @@ io = CapIO
 
 
 async def event_loop():
-    pathA = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/B_LESS_CAR.png")
-    #pathB = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/B_MANY_CAR.png")
-    #pathC = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/B_NO_CAR.png")
+    global TLID
+    pathA = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/A_LESS_CAR.png")
+    # pathB = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/A_MANY_CAR.png")
+    # pathC = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/A_NO_CAR.png")
     images_sources = [pathA]
     # img = cv2.imread(os.path.join("Aaa",str(os.path.dirname(__file__)),
     # "../Configuration/SourceImage/B_LESS_CAR.png")) img = cv2.cvtColor(img,cv2.COLOR_RGB2BGRA) cv2.imshow("yy",
@@ -33,18 +34,19 @@ async def event_loop():
             await AsynT.CAP_ACK(CAM_ID)
             print("Capturing image..........")
             img = cv2.imread(random_image)
-            # IMPORTANT : IF CHANGE ENVIRONMENT, HAVE TO RECONFIGURE POLYGON IN image_analyzer.py
-            date_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             print("Analyzing image..........")
             frequency, total_vehicle = analyze_image(CAM_ID, img)
             order = io.get_order(TLID)
             dict_total = {"Total": total_vehicle}
-            print(f"TL002 Traffic is {dict_total}")
+            print(f"TL001 Traffic is {dict_total}")
             frequency = dict(frequency)
             complete_dict = dict_total | frequency
+            print(f"Complete dict is {complete_dict}")
+            print(f"TLID is {TLID}")
+            complete_dict_with_timestamp = complete_dict["timestamp"] = fb.create_time_stamp()
             await asyncio.gather(
                 AsynT.update_traffic(order, total_vehicle),
-                AsynT.update_traffic_data(TLID, date_time, complete_dict))
+                AsynT.update_traffic_data(complete_dict_with_timestamp,TLID))
 
 
 asyncio.run(event_loop())

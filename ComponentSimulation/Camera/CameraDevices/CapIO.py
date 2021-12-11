@@ -34,8 +34,8 @@ class CapIO(object):
         fb.update("Server/TrafficAmount", {order: amount})
 
     @staticmethod
-    async def append_traffic_data(key, complete_dict, TLID):
-        fb.append(f"Traffic Data/{TLID}", {key: complete_dict})
+    async def append_traffic_data(complete_dict_with_timestamp, TLID):
+        fb.append(f"TrafficData/{TLID}", complete_dict_with_timestamp)
 
 
 def get_key(val, dict):
