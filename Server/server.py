@@ -3,8 +3,8 @@ import asyncio
 from Server.AsynchronousTask import *
 
 asynT = AsynchronousTask
-STANDARD_PERIOD = 8
-intelli_period = 8
+STANDARD_PERIOD = 13
+intelli_period = 13
 TRANSITION_PERIOD = 3
 
 
@@ -103,20 +103,16 @@ async def event_loop():
             await switch_road_one_times()
             print(f"LOG OUTPUT: TRANSITION PERIOD IS {TRANSITION_PERIOD}")
             await display_transition(TRANSITION_PERIOD)
-            await asyncio.sleep(3)
-            order = dict(order)
-            TFID_RED001, TFID_RED002 = order['RED001'], order['RED002']  # Help to identify camera id
+            await asyncio.sleep(TRANSITION_PERIOD)
 
         elif both_side_is_almost_equal_or_road2_no_car(TFFC_RED001, TFFC_RED002, 6):
             print("EVENT LOG: both_side_is_almost_equal_or_road2_no_car")
             print(f"PARAM CHECK LOG: TFFC_RED001 {TFFC_RED001}, TFFC_RED001 {TFFC_RED001}")
             intelli_period = STANDARD_PERIOD
             await asynT.update_cycle_period(intelli_period)
-            order = await switch_road1_to_green()
+            await switch_road1_to_green()
             await display_transition(TRANSITION_PERIOD)
-            order = dict(order)
-            TFID_RED001, TFID_RED002 = order['RED001'], order['RED002']  # Help to identify camera id
-            intelli_period = STANDARD_PERIOD
+            await asyncio.sleep(TRANSITION_PERIOD)
 
         elif TFFC_RED001 > TFFC_RED002:
             print("LOGIC LOG : DETECTED RED001_TRAFFIC > RED002_TRAFFIC")
@@ -136,10 +132,8 @@ async def event_loop():
         elif TFFC_RED001 < TFFC_RED002:
             print(f"PARAM CHECK LOG: TFFC_RED001 {TFFC_RED001}, TFFC_RED001 {TFFC_RED001}")
             print("LOGIC LOG : DETECTED red001_traffic < red002_traffic")
-            order = await switch_road1_to_green()
+            await switch_road1_to_green()
             await display_transition(TRANSITION_PERIOD)
-            order = dict(order)
-            TFID_RED001, TFID_RED002 = order['RED001'], order['RED002']  # Help to identify camera id
             intelli_period = STANDARD_PERIOD
             pass
 
@@ -233,6 +227,11 @@ async def switch_road_two_times():
     return new_order_tf
 
 
+async def switch_road_two_times_without_switch_status_updated():
+    for i in range(2):
+        await asyncio.gather(asynT.update_tlight_to_switch_stat())
+
+
 async def switch_road_one_times():
     _, new_order = await asyncio.gather(
         asynT.update_tlight_to_switch_stat(),
@@ -264,53 +263,73 @@ async def start_ambulance_cycle():
     ambulance_data = await asynT.read_ambulance_state_from_database()
     have_ambulance = 'HAVE AMBULANCE' in ambulance_data.values()
     current_traffic_light_order = dict(io.get_tflight_order())
+    TL_RED001 = current_traffic_light_order["RED001"]
+    TL_RED002 = current_traffic_light_order["RED002"]
+    TL_GREEN001 = current_traffic_light_order["GREEN001"]
 
     if have_ambulance:
         road_with_ambulance = get_key("HAVE AMBULANCE", ambulance_data)
+        print(f"OUTPUT LOG: road_with_ambulance_is{road_with_ambulance}")
         order_of_road = get_key(road_with_ambulance, current_traffic_light_order)
+        print(f"OUTPUT LOG:order_of_road_is {order_of_road}")
         await asynT.reset_ambulance_data()
+
+        PROPER_AMBULANCE_ORDER = {
+            "GREEN001": f"{TL_RED001}",
+            "RED001": f"{TL_GREEN001}",
+            "RED002": f"{TL_RED002}"
+        }
+
+        RESUME_ORDER = current_traffic_light_order
 
         if order_of_road == "GREEN001":
             suspend_counter = 0
             while True:
                 suspend_counter += 1
                 ambulance_have_passed = await asynT.check_ambulance_have_pass_flag()
+                print("LOGIC LOG: Checked have passed flag for RED002")
                 if ambulance_have_passed == "HAVE PASSED":
+                    await reset_is_pass_and_resume_prev_order(RESUME_ORDER)
                     break
                 if suspend_counter == 90:
+                    await reset_is_pass_and_resume_prev_order(RESUME_ORDER)
                     print("Timeout error")
                     break
                 await asyncio.sleep(1)
 
         elif order_of_road == "RED001":
             ambulance_counter = 0
-            await switch_road_two_times()
+            await io.switch_to_ambulance_priority_order(PROPER_AMBULANCE_ORDER)
+            await io.update_all_to_switch()
             await display_transition(TRANSITION_PERIOD)
 
             while True:
                 ambulance_counter += 1
                 ambulance_have_passed = await asynT.check_ambulance_have_pass_flag()
+                print("LOGIC LOG: Checked have passed flag for RED002")
                 if ambulance_have_passed == "HAVE PASSED":
-                    await switch_road_one_times()
+                    await reset_is_pass_and_resume_prev_order(RESUME_ORDER)
                     break
                 if ambulance_counter == 90:
-                    await switch_road_one_times()
+                    await reset_is_pass_and_resume_prev_order(RESUME_ORDER)
                     print("Timeout error")
                     break
                 await asyncio.sleep(1)
 
         elif order_of_road == "RED002":
             ambulance_counter = 0
-            await switch_road_one_times()
+            await io.switch_to_ambulance_priority_order(PROPER_AMBULANCE_ORDER)
+            await io.update_all_to_switch()
             await display_transition(TRANSITION_PERIOD)
             while True:
                 ambulance_counter += 1
                 ambulance_have_passed = await asynT.check_ambulance_have_pass_flag()
+                print("LOGIC LOG: Checked have passed flag for RED002")
                 if ambulance_have_passed == "HAVE PASSED":
-                    await switch_road_two_times()
+                    await reset_is_pass_and_resume_prev_order(RESUME_ORDER)
                     break
                 if ambulance_counter == 90:
-                    await switch_road_two_times()
+                    await reset_is_pass_and_resume_prev_order(RESUME_ORDER)
                     print("Timeout error")
                     break
                 await asyncio.sleep(1)
@@ -319,6 +338,11 @@ async def start_ambulance_cycle():
             print("IO ERROR, THE VALUE IS NOT RECOGNIZE")
     else:
         return
+
+
+async def reset_is_pass_and_resume_prev_order(prev_order):
+    await asyncio.gather(asynT.resume_the_traffic_light_to_previous_order(prev_order),
+                         asynT.reset_back_is_pass_to_no_ambulance())
 
 
 asyncio.run(event_loop())

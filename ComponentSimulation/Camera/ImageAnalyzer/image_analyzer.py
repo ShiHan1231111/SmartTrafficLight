@@ -1,5 +1,7 @@
 import collections
 import os
+
+import null
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -36,10 +38,12 @@ def analyze_image(CAM_ID, img):
 
 
 def get_path_info():
+    current_dir = os.path.dirname(__file__)
+
     path = PathInfo(
-        path_to_model_config="../ImageAnalyzer/AI_Toolkit/yolov3-320.cfg",
-        path_to_objs_name="../ImageAnalyzer/AI_Toolkit/coco.names",
-        path_to_wight="../ImageAnalyzer/AI_Toolkit/yolov3-320.weights"
+        path_to_model_config=os.path.join(current_dir, "AI_Toolkit/yolov3-320.cfg"),
+        path_to_objs_name=os.path.join(current_dir, "AI_Toolkit/coco.names"),
+        path_to_wight=os.path.join(current_dir, "AI_Toolkit/yolov3-320.weights")
     )
     return path
 
@@ -103,6 +107,8 @@ def postProcess(outputs, img, model, style, image_class, polygon_of_road):
             image_class.draw_bounding_box(tempObj)
             obj_arr.append(tempObj)
         return detected_classNames, obj_arr
+    else:
+        return [], []
 
 
 def label_data_to_image(detected_classNames, image_class, style, polygon_of_road, CAM_ID):
@@ -122,7 +128,8 @@ def label_data_to_image(detected_classNames, image_class, style, polygon_of_road
     cv2.putText(img, "Truck:      " + str(frequency['truck']), (20, 100), cv2.FONT_HERSHEY_SIMPLEX, font_size,
                 font_color, font_thickness)
     img = cv2.polylines(img, [polygon_of_road.reshape((-1, 1, 2))], isClosed=True, color=(255, 0, 0), thickness=2)
-    output_dir = f"../Gallery/{CAM_ID}/{datetime.today().strftime('%Y-%m-%d')}"
+    current_dir = os.path.dirname(__file__)
+    output_dir = os.path.join(current_dir, f"../Gallery/{CAM_ID}/{datetime.today().strftime('%Y-%m-%d')}")
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
     cv2.imwrite(os.path.join(output_dir, f'{datetime.now().strftime("H%H_M%M_S%S")}.png'), img)

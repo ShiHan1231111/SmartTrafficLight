@@ -55,7 +55,7 @@ class ServerIO(object):
     @staticmethod
     async def reset_ambulance_record():
         initial_ambulance_data = {
-            "IS PASS": "NO AMBULANCE",
+            "IS PASS": "NOT PASSED",
             "TL001": "NO AMBULANCE",
             "TL002": "NO AMBULANCE",
             "TL003": "NO AMBULANCE"
@@ -68,5 +68,14 @@ class ServerIO(object):
 
     @staticmethod
     async def reset_back_is_pass_flag_to_no_ambulance():
-        fb.update("Server/Event/Ambulance", {"IS PASS": "NO AMBULANCE"})
+        fb.update("Server/Event/Ambulance", {"IS PASS": "HAVE PASSED"})
+
+    @staticmethod
+    async def resume_the_traffic_light_to_previous_order(PREVIOUS_ORDER):
+        fb.update("Server", {"Order":PREVIOUS_ORDER})
+
+    @staticmethod
+    async def switch_to_ambulance_priority_order(PROPER_AMBULANCE_ORDER):
+        fb.update("Server", {"Order": PROPER_AMBULANCE_ORDER})
+
 

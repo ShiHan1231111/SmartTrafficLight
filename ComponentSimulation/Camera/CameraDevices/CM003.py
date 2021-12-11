@@ -18,13 +18,13 @@ io = CapIO
 async def event_loop():
     pathA = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/B_LESS_CAR.png")
     pathB =os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/B_MANY_CAR.png")
-    pathC=os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/B_NO_CAR.png")
-    images_sources = [pathA,pathB,pathC]
+    pathC = os.path.join(os.path.dirname(__file__), "../Configuration/SourceImage/B_NO_CAR.png")
+    images_sources = [pathA]
     # img = cv2.imread(os.path.join("Aaa",str(os.path.dirname(__file__)),
     # "../Configuration/SourceImage/B_LESS_CAR.png")) img = cv2.cvtColor(img,cv2.COLOR_RGB2BGRA) cv2.imshow("yy",
     # img) cv2.waitKey()
     while True:
-        print("running cam 001....")
+        print("running cam 003....")
         random_image = random.choice(images_sources)
         event, val = await asyncio.gather(AsynT.listen_capture_event(CAM_ID), AsynT.sleep(0.5))
         print(event)
@@ -40,6 +40,7 @@ async def event_loop():
             order = io.get_order(TLID)
             dict_total = {"Total": total_vehicle}
             frequency = dict(frequency)
+            print(f"TL003 Traffic is {dict_total}")
             complete_dict = dict_total | frequency
             await asyncio.gather(
                 AsynT.update_traffic(order, total_vehicle),
