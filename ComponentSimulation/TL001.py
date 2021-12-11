@@ -23,18 +23,6 @@ e = EventListener
 ack = EventAck
 
 
-def get_key(val, dict):
-    for key, value in dict.items():
-        if val == value:
-            return key
-
-    return "key doesn't exist"
-
-
-async def sleepHalfSec():
-    await asyncio.sleep(0.5)
-
-
 async def main():
     while True:
         sleepTask = asyncio.create_task(sleepHalfSec())
@@ -73,11 +61,21 @@ async def main():
                 await asyncio.gather(sleep_task_, ackTask, on_red_task)
                 await check_red_light()
             else:
-                print("The order is not valid error")
-                # TODO: reset server table
-
+                print("The order is not valid")
         else:
             pass
+
+
+def get_key(val, dict):
+    for key, value in dict.items():
+        if val == value:
+            return key
+
+    return "key doesn't exist"
+
+
+async def sleepHalfSec():
+    await asyncio.sleep(0.5)
 
 
 async def red_transition():

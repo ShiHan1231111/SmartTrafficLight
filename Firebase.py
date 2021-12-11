@@ -17,8 +17,6 @@ class Firebase():
             self.user = self.auth.sign_in_with_email_and_password("kchongee@gmail.com", "zt/h!\!*B;{)8/U$")
             self.db = self.firebase.database()
             self.storage = self.firebase.storage()
-
-
         except Exception as e:
             print(e)
             exit(-1)
