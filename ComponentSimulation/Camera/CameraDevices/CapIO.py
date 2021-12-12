@@ -37,6 +37,10 @@ class CapIO(object):
     async def append_traffic_data(complete_dict_with_timestamp, TLID):
         fb.append(f"TrafficData/{TLID}", complete_dict_with_timestamp)
 
+    @staticmethod
+    async def update_camera_status_to_off_line():
+        fb.update()
+
 
 def get_key(val, dict):
     for key, value in dict.items():

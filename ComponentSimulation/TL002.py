@@ -23,18 +23,6 @@ e = EventListener
 ack = EventAck
 
 
-def get_key(val, dict):
-    for key, value in dict.items():
-        if val == value:
-            return key
-
-    return "key doesn't exist"
-
-
-async def sleepHalfSec():
-    await asyncio.sleep(0.5)
-
-
 async def main():
     while True:
         sleepTask = asyncio.create_task(sleepHalfSec())
@@ -78,6 +66,18 @@ async def main():
 
         else:
             pass
+
+
+def get_key(val, dict):
+    for key, value in dict.items():
+        if val == value:
+            return key
+
+    return "key doesn't exist"
+
+
+async def sleepHalfSec():
+    await asyncio.sleep(0.5)
 
 
 async def red_transition():

@@ -2,7 +2,6 @@ import asyncio
 
 from ComponentModule.OutputComponentPackage.GroveRelay import *
 from ComponentModule.InputComponentPackage.LightCheckPin import *
-
 import time
 from grovepi import *
 from pyrebase import pyrebase
