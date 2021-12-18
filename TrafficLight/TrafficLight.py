@@ -154,7 +154,7 @@ def send_message(name,light_name):
                 to='+6016-4160655'
             )
     print(message.status)
-    
+
     
 def push_malfunc_notification(name,light_name,curr_status):
     print("inside {push_malfunc_notification}")
