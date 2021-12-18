@@ -159,7 +159,7 @@ def push_fixed_notification(name,light_name,curr_status):
         fb.append("/Notifications/notification", {"unread": True, "title": f"Malfunctioned {name} {light_name.replace('_',' ')} has been fixed", "timestamp": fb.create_time_stamp()})
         
 def is_status_diff(name,light_name,curr_status):
-    prev_status = db.read(f"/TrafficLights/{name}/{light_name}")["status"]    
+    prev_status = fb.read(f"/TrafficLights/{name}/{light_name}")["status"]
     return True if prev_status != curr_status else False
     
 
